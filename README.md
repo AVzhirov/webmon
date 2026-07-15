@@ -69,7 +69,7 @@ bun install   # или npm install / pnpm install
 bun run db:push
 
 # Dev-сервер
-bun run dev   # http://localhost:3000
+bun run dev   # http://localhost:8083
 ```
 
 ### Первый вход
@@ -84,11 +84,35 @@ bun run dev   # http://localhost:3000
 
 1. Скачайте `RKWebMonitor-2.0.0-setup.exe` со страницы [Releases](https://github.com/AVzhirov/webmon/releases)
 2. Запустите от имени администратора
-3. Следуйте мастеру установки
-4. После установки автоматически откроется браузер на `http://localhost:3000`
+3. Следуйте мастеру установки (по умолчанию включены: автозапуск службы + правило Firewall)
+4. После установки автоматически запустится **Windows-служба `RKWebMonitor`** и откроется браузер на `http://localhost:8083`
 5. Войдите как `admin/admin` и настройте подключение к RK7
 
 **Node.js не требуется** — установщик включает portable Node.js v22.
+
+### Особенности установки
+
+- ✅ **Windows Service** через NSSM (Non-Sucking Service Manager)
+- ✅ **Автозапуск** при старте Windows (опционально)
+- ✅ **Авто-перезапуск** при сбое (через 5 секунд)
+- ✅ **Логирование** в `logs\server.log` с ротацией 10 МБ
+- ✅ **Порт 8083** по умолчанию (совместим с оригинальным WebMonitor 4.11)
+- ✅ **Смена порта** через веб-интерфейс: Настройки → Система → Порт → Перезапустить службу
+
+### Управление службой
+
+```cmd
+:: Через меню Пуск:
+"Запустить службу"      → start.bat
+"Остановить службу"     → stop.bat
+"Перезапустить службу"  → restart.bat
+
+:: Через командную строку (от администратора):
+sc start RKWebMonitor       :: запуск
+sc stop RKWebMonitor        :: остановка
+sc query RKWebMonitor       :: статус
+sc config RKWebMonitor start= auto   :: автозапуск
+```
 
 Подробности — в [Руководстве пользователя](installer/USERGUIDE.md).
 

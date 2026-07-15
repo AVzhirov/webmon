@@ -31,6 +31,10 @@ import {
   User as UserIcon,
   Crown,
   Settings,
+  Cpu,
+  Network,
+  RotateCw,
+  AlertTriangle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -62,7 +66,7 @@ interface SettingsDialogProps {
 }
 
 export function SettingsDialog({ open, onOpenChange, onServersChanged }: SettingsDialogProps) {
-  const [tab, setTab] = useState<'servers' | 'users'>('servers');
+  const [tab, setTab] = useState<'servers' | 'users' | 'system'>('servers');
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -73,12 +77,12 @@ export function SettingsDialog({ open, onOpenChange, onServersChanged }: Setting
             Настройки системы
           </DialogTitle>
           <DialogDescription className="text-xs">
-            Управление серверами R-Keeper и пользователями системы
+            Управление серверами R-Keeper, пользователями и системными параметрами
           </DialogDescription>
         </DialogHeader>
 
         <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="mx-6 mt-4 grid grid-cols-2 w-auto max-w-md">
+          <TabsList className="mx-6 mt-4 grid grid-cols-3 w-auto max-w-md">
             <TabsTrigger value="servers" className="gap-1.5">
               <ServerIcon className="h-3.5 w-3.5" />
               Серверы
@@ -86,6 +90,10 @@ export function SettingsDialog({ open, onOpenChange, onServersChanged }: Setting
             <TabsTrigger value="users" className="gap-1.5">
               <Users className="h-3.5 w-3.5" />
               Пользователи
+            </TabsTrigger>
+            <TabsTrigger value="system" className="gap-1.5">
+              <Cpu className="h-3.5 w-3.5" />
+              Система
             </TabsTrigger>
           </TabsList>
 
@@ -95,6 +103,10 @@ export function SettingsDialog({ open, onOpenChange, onServersChanged }: Setting
 
           <TabsContent value="users" className="flex-1 overflow-y-auto scroll-area-thin m-0 p-6 pt-4 mt-4">
             <UsersTab />
+          </TabsContent>
+
+          <TabsContent value="system" className="flex-1 overflow-y-auto scroll-area-thin m-0 p-6 pt-4 mt-4">
+            <SystemTab />
           </TabsContent>
         </Tabs>
       </DialogContent>
@@ -870,4 +882,269 @@ function UserForm({
       </div>
     </form>
   );
+}
+
+// ============================================================
+// System tab (port, host, service management)
+// ============================================================
+
+interface SystemSettingsData {
+  port: number
+  host: string
+  autoStartService: boolean
+}
+
+function SystemTab() {
+  const [settings, setSettings] = useState<SystemSettingsData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [restarting, setRestarting] = useState(false)
+  const [port, setPort] = useState('8083')
+  const [host, setHost] = useState('0.0.0.0')
+  const { toast } = useToast()
+
+  useEffect(() => {
+    fetch('/api/admin/settings', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data) {
+          setSettings(data)
+          setPort(String(data.port ?? 8083))
+          setHost(data.host ?? '0.0.0.0')
+        }
+      })
+      .catch(() => {
+        /* ignore */
+      })
+      .finally(() => setLoading(false))
+  }, [])
+
+  const handleSave = async () => {
+    const portNum = parseInt(port, 10)
+    if (!Number.isInteger(portNum) || portNum < 1024 || portNum > 65535) {
+      toast({
+        title: 'Неверный порт',
+        description: 'Порт должен быть целым числом от 1024 до 65535',
+        variant: 'destructive',
+      })
+      return
+    }
+    setSaving(true)
+    try {
+      const r = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ port: portNum, host }),
+      })
+      const data = await r.json()
+      if (!r.ok) throw new Error(data.error || 'Ошибка')
+      toast({
+        title: 'Настройки сохранены',
+        description: data.warning || 'Применится после перезапуска',
+      })
+    } catch (e) {
+      toast({
+        title: 'Ошибка',
+        description: e instanceof Error ? e.message : 'Не удалось сохранить',
+        variant: 'destructive',
+      })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleRestart = async () => {
+    if (!confirm('Перезапустить службу? Сервер будет недоступен 2-5 секунд.')) return
+    setRestarting(true)
+    try {
+      const r = await fetch('/api/admin/service-restart', { method: 'POST' })
+      const data = await r.json()
+      if (!r.ok) throw new Error(data.error || 'Ошибка')
+      toast({
+        title: 'Запрос отправлен',
+        description: data.message,
+      })
+    } catch (e) {
+      toast({
+        title: 'Ошибка',
+        description: e instanceof Error ? e.message : 'Не удалось перезапустить',
+        variant: 'destructive',
+      })
+    } finally {
+      setRestarting(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-32 text-sm text-muted-foreground">
+        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+        Загрузка…
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-base font-semibold">Системные параметры</h3>
+        <p className="text-xs text-muted-foreground">
+          Настройка сетевого порта и хоста для веб-сервера. По умолчанию — порт 8083
+          (совместим с оригинальным WebMonitor 4.11).
+        </p>
+      </div>
+
+      {/* Текущий статус */}
+      <div className="rounded-lg border border-primary/30 bg-primary/5 p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15 text-primary shrink-0">
+            <Network className="h-5 w-5" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-semibold">Текущая конфигурация</span>
+              <StatusBadge variant="success" dot>
+                Активна
+              </StatusBadge>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Сервер слушает порт <code className="font-mono font-semibold text-primary">{settings?.port ?? 8083}</code> на адресе{' '}
+              <code className="font-mono font-semibold text-primary">{settings?.host ?? '0.0.0.0'}</code>
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">
+              Доступ: <code className="font-mono">http://localhost:{settings?.port ?? 8083}</code> ·{' '}
+              <code className="font-mono">http://&lt;IP-компьютера&gt;:{settings?.port ?? 8083}</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Форма настроек */}
+      <div className="rounded-lg border p-4 space-y-3">
+        <h4 className="text-sm font-semibold">Изменить параметры сети</h4>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label className="text-xs">Порт (1024–65535)</Label>
+            <Input
+              type="number"
+              min={1024}
+              max={65535}
+              value={port}
+              onChange={(e) => setPort(e.target.value)}
+              placeholder="8083"
+              className="h-9 font-mono"
+            />
+            <p className="text-[10px] text-muted-foreground">
+              По умолчанию: 8083 (как в оригинальном WebMonitor)
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs">Хост (привязка интерфейса)</Label>
+            <select
+              value={host}
+              onChange={(e) => setHost(e.target.value)}
+              className="h-9 w-full rounded-md border bg-background px-3 text-sm font-mono"
+            >
+              <option value="0.0.0.0">0.0.0.0 (все интерфейсы — рекомендуется)</option>
+              <option value="127.0.0.1">127.0.0.1 (только localhost)</option>
+              <option value="::">:: (IPv6 все интерфейсы)</option>
+            </select>
+            <p className="text-[10px] text-muted-foreground">
+              0.0.0.0 — доступ с других компьютеров сети
+            </p>
+          </div>
+        </div>
+
+        {/* Предупреждение о перезапуске */}
+        <div className="rounded-md border border-amber-500/30 bg-amber-500/5 p-3 flex items-start gap-2">
+          <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div className="text-xs">
+            <span className="font-medium text-amber-700 dark:text-amber-300">
+              Изменения порта применятся только после перезапуска службы.
+            </span>{' '}
+            После сохранения нажмите «Перезапустить службу» ниже, либо выполните stop.bat + start.bat вручную.
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-2 pt-2 border-t">
+          <Button size="sm" disabled={saving} onClick={handleSave}>
+            {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+            Сохранить настройки
+          </Button>
+        </div>
+      </div>
+
+      {/* Управление службой */}
+      <div className="rounded-lg border p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="text-sm font-semibold flex items-center gap-2">
+              <Cpu className="h-4 w-4" />
+              Управление службой Windows
+            </h4>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Перезапуск службы RKWebMonitor для применения изменений порта
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="rounded-md border bg-muted/20 p-3">
+            <div className="text-xs text-muted-foreground">Статус службы</div>
+            <div className="font-semibold text-sm flex items-center gap-1.5 mt-1">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse-glow" />
+              Работает
+            </div>
+          </div>
+          <div className="rounded-md border bg-muted/20 p-3">
+            <div className="text-xs text-muted-foreground">Тип запуска</div>
+            <div className="font-semibold text-sm mt-1">Авто</div>
+          </div>
+          <div className="rounded-md border bg-muted/20 p-3">
+            <div className="text-xs text-muted-foreground">Имя службы</div>
+            <div className="font-mono text-sm mt-1">RKWebMonitor</div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 pt-2 border-t">
+          <Button size="sm" variant="outline" disabled={restarting} onClick={handleRestart}>
+            {restarting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCw className="h-3.5 w-3.5" />}
+            Перезапустить службу
+          </Button>
+          <span className="text-xs text-muted-foreground">
+            Альтернатива: Пуск → «Остановить сервер» → «RK Web Monitor»
+          </span>
+        </div>
+      </div>
+
+      {/* Информация о системе */}
+      <div className="rounded-lg border p-4">
+        <h4 className="text-sm font-semibold mb-3">Информация о системе</h4>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Версия приложения:</span>
+            <span className="font-mono">2.0.0</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Платформа:</span>
+            <span>Next.js 16 (Standalone) + Node.js</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">База данных:</span>
+            <span>SQLite (Prisma ORM)</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Папка данных:</span>
+            <code className="font-mono text-xs">data/rkwebmon.db</code>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Логи:</span>
+            <code className="font-mono text-xs">logs/server.log</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }

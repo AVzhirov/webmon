@@ -64,3 +64,10 @@ model StaffMessage {
   sentAt        DateTime @default(now())
   status        String   @default("sent") // sent | queued | failed
 }
+
+/// Системные настройки (key-value). Хранит порт, host и др.
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

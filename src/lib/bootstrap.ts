@@ -1,15 +1,26 @@
 import { db } from './db'
 import { hashPassword } from './auth'
+import { setSettings, getSettings, DEFAULT_SETTINGS } from './settings'
 
 /**
  * Инициализация БД при первом запуске:
  *  - создаёт admin/admin (если нет ни одного пользователя)
  *  - создаёт 2 демо-сервера (если таблица серверов пуста)
+ *  - создаёт системные настройки по умолчанию (порт 8083)
  *
  * Безопасно вызывать многократно — все операции идемпотентны.
  */
 export async function bootstrapDatabase() {
   try {
+    // Системные настройки (порт и т.д.)
+    const settings = await getSettings()
+    if (settings.port !== DEFAULT_SETTINGS.port || !settings.host) {
+      await setSettings({
+        port: settings.port || DEFAULT_SETTINGS.port,
+        host: settings.host || DEFAULT_SETTINGS.host,
+      })
+    }
+
     // Создать пользователя admin по умолчанию
     const usersCount = await db.user.count()
     if (usersCount === 0) {
@@ -47,6 +58,8 @@ export async function bootstrapDatabase() {
       })
       console.log('[bootstrap] Created default demo servers')
     }
+
+    console.log(`[bootstrap] Server will listen on port ${settings.port}`)
   } catch (e) {
     console.error('[bootstrap] Failed:', e)
   }

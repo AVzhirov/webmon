@@ -55,48 +55,75 @@ cd installer
 | `C:\Program Files\RK Web Monitor\app\public\` | Демо-данные (47 XML + 6 карт зала) |
 | `C:\Program Files\RK Web Monitor\app\prisma\` | Схема базы данных |
 | `C:\Program Files\RK Web Monitor\node\` | Portable Node.js v22.11.0 |
-| `C:\Program Files\RK Web Monitor\data\` | База данных SQLite (rkwebmon.db) |
-| `C:\Program Files\RK Web Monitor\logs\` | Логи сервера |
-| `C:\Program Files\RK Web Monitor\bin\nssm.exe` | Менеджер служб (опционально) |
-| `C:\Program Files\RK Web Monitor\start.bat` | Запуск сервера |
-| `C:\Program Files\RK Web Monitor\stop.bat` | Остановка сервера |
+| `C:\Program Files\RK Web Monitor\data\` | База данных SQLite (rkwebmon.db) + restart.flag |
+| `C:\Program Files\RK Web Monitor\logs\` | Логи сервера (server.log, ротация 10 МБ) |
+| `C:\Program Files\RK Web Monitor\bin\nssm.exe` | Менеджер служб NSSM |
+| `C:\Program Files\RK Web Monitor\bin\watchdog.js` | Обёртка для graceful restart службы |
+| `C:\Program Files\RK Web Monitor\start.bat` | Запуск службы |
+| `C:\Program Files\RK Web Monitor\stop.bat` | Остановка службы |
+| `C:\Program Files\RK Web Monitor\restart.bat` | Перезапуск службы |
 | `C:\Program Files\RK Web Monitor\RKWebMonitor.bat` | Главный запускатель |
 
 ### Ярлыки:
 
-- **Пуск → RK Web Monitor** — запуск приложения
-- **Пуск → Открыть в браузере** — открыть http://localhost:3000
-- **Пуск → Остановить сервер** — корректная остановка
-- **Пуск → Удалить программу** — деинсталляция
-- **Рабочий стол** (опционально) — иконка запуска
-- **Автозагрузка** (опционально) — автозапуск при входе в Windows
+- **Пуск → Открыть в браузере** — открыть http://localhost:8083
+- **Пуск → Запустить службу** — `start.bat`
+- **Пуск → Остановить службу** — `stop.bat`
+- **Пуск → Перезапустить службу** — `restart.bat` (для применения новых настроек)
+- **Пуск → Удалить программу** — деинсталляция (с остановкой и удалением службы)
+- **Рабочий стол** (опционально) — ярлык на http://localhost:8083
 
 ### Дополнительно:
 
-- **Правило Windows Firewall** для порта 3000 (опционально)
+- **Windows Service** `RKWebMonitor` устанавливается через NSSM с авто-перезапуском при сбое
+- **Правило Windows Firewall** для порта 8083 (опционально)
 - **База данных** SQLite создаётся автоматически при первом запуске
 - **Демо-серверы и admin-пользователь** создаются автоматически
+- **Watchdog**: обёртка `bin\watchdog.js` читает флаг `data\restart.flag` и инициирует перезапуск службы (используется для применения изменений порта через веб-интерфейс)
 
 ## Первые шаги после установки
 
-1. Запустите **RK Web Monitor** из меню Пуск (или ярлык на рабочем столе)
-2. Откроется консольное окно — **не закрывайте его** пока работаете
-3. Через 5 секунд автоматически откроется браузер на http://localhost:3000
-4. Введите логин **`admin`** и пароль **`admin`**
-5. **Сразу смените пароль** через Настройки → Пользователи → Редактировать
-6. В Настройках добавьте свой сервер R-Keeper 7
+1. После установки служба `RKWebMonitor` запустится автоматически
+2. Откройте браузер: http://localhost:8083 (или ярлык "Открыть в браузере" в меню Пуск)
+3. Введите логин **`admin`** и пароль **`admin`**
+4. **Сразу смените пароль** через Настройки → Пользователи → Редактировать
+5. В Настройках добавьте свой сервер R-Keeper 7
+6. Если нужно сменить порт — Настройки → Система → Порт → Перезапустить службу
+
+## Управление службой
+
+```cmd
+:: Меню Пуск:
+"Запустить службу"      → start.bat
+"Остановить службу"     → stop.bat
+"Перезапустить службу"  → restart.bat
+
+:: Командная строка (от администратора):
+sc start RKWebMonitor       :: запуск
+sc stop RKWebMonitor        :: остановка
+sc query RKWebMonitor       :: статус
+
+:: services.msc:
+:: Найдите службу "RK Web Monitor" — управление через GUI
+```
 
 ## Удаление
 
 - Пуск → RK Web Monitor → Удалить программу
+- Деинсталлятор автоматически:
+  1. Останавливает службу `RKWebMonitor`
+  2. Удаляет службу через NSSM
+  3. Удаляет правило Windows Firewall
+  4. Удаляет файлы приложения
 - **База данных сохраняется** в `C:\Program Files\RK Web Monitor\data\` (можно сделать бэкап перед удалением)
 
 ## Если что-то не работает
 
 1. Проверьте логи: `C:\Program Files\RK Web Monitor\logs\server.log`
-2. Убедитесь, что порт 3000 свободен: `netstat -an | findstr :3000`
-3. Проверьте, что в Firewall разрешён порт 3000
-4. Запустите `stop.bat`, затем `start.bat` заново
+2. Проверьте статус службы: `sc query RKWebMonitor` или `services.msc`
+3. Убедитесь, что порт 8083 свободен: `netstat -an | findstr :8083`
+4. Проверьте, что в Firewall разрешён порт 8083
+5. Перезапустите службу: `restart.bat` или `sc stop RKWebMonitor && sc start RKWebMonitor`
 
 ## Альтернатива: portable ZIP (без установщика)
 
