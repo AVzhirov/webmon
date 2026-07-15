@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { errorResponse } from '@/lib/api-utils'
 import { parseHallPlans, parseHallTables } from '@/lib/rk7/reports';
 import { withDemoDelay } from '../_helpers';
 
@@ -12,9 +13,6 @@ export async function GET(req: NextRequest) {
     const data = await parseHallPlans();
     return withDemoDelay(NextResponse.json(data));
   } catch (e) {
-    return NextResponse.json(
-      { error: 'Failed to load hall plans', detail: String(e) },
-      { status: 500 },
-    );
+    return errorResponse('Failed to load hall plans', 500, e);
   }
 }

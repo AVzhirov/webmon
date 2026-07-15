@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { errorResponse } from '@/lib/api-utils'
 import { parsePersonal } from '@/lib/rk7/reports';
 import { withDemoDelay } from '../_helpers';
 
@@ -7,9 +8,6 @@ export async function GET(_req: NextRequest) {
     const data = await parsePersonal();
     return withDemoDelay(NextResponse.json(data));
   } catch (e) {
-    return NextResponse.json(
-      { error: 'Failed to load personal', detail: String(e) },
-      { status: 500 },
-    );
+    return errorResponse('Failed to load personal', 500, e);
   }
 }

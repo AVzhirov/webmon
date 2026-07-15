@@ -1,58 +1,77 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
-import type { StaffMessage } from '@/lib/rk7/types';
+import { NextRequest, NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+import { getCurrentUser } from '@/lib/session'
+import { errorResponse, clampString } from '@/lib/api-utils'
 
-const MESSAGES_FILE = path.join(process.cwd(), 'public', 'demo-data', 'messages.json');
-
-async function readMessages(): Promise<StaffMessage[]> {
-  try {
-    const data = await fs.readFile(MESSAGES_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch {
-    return [];
-  }
-}
-
-async function writeMessages(messages: StaffMessage[]): Promise<void> {
-  await fs.writeFile(MESSAGES_FILE, JSON.stringify(messages, null, 2), 'utf-8');
-}
-
+/**
+ * GET /api/messages — список сообщений (для авторизованных)
+ * POST /api/messages — отправить сообщение (manager + admin)
+ */
 export async function GET() {
-  const messages = await readMessages();
-  return NextResponse.json(messages);
+  try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Не авторизован' }, { status: 401 })
+    }
+
+    const messages = await db.staffMessage.findMany({
+      orderBy: { sentAt: 'desc' },
+      take: 200, // ограничение — последние 200
+      include: { sentBy: { select: { displayName: true } } },
+    })
+
+    return NextResponse.json(messages)
+  } catch (e) {
+    return errorResponse('Не удалось получить сообщения', 500, e)
+  }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Не авторизован' }, { status: 401 })
+    }
+    // Только manager и admin могут отправлять сообщения
+    if (user.role === 'viewer') {
+      return NextResponse.json({ error: 'Недостаточно прав для отправки' }, { status: 403 })
+    }
+
+    const body = await req.json().catch(() => ({}))
     const { recipient, recipientCode, text } = body as {
-      recipient: string;
-      recipientCode?: number;
-      text: string;
-    };
-    if (!recipient || !text) {
+      recipient?: string
+      recipientCode?: number
+      text?: string
+    }
+
+    if (!recipient?.trim() || !text?.trim()) {
       return NextResponse.json(
         { error: 'Не заполнены получатель или текст сообщения' },
         { status: 400 },
-      );
+      )
     }
-    const messages = await readMessages();
-    const newMsg: StaffMessage = {
-      id: `msg-${Date.now()}`,
-      recipient,
-      recipientCode,
-      text,
-      sentAt: new Date().toISOString(),
-      status: 'sent',
-    };
-    messages.unshift(newMsg);
-    await writeMessages(messages);
-    return NextResponse.json(newMsg, { status: 201 });
+
+    // Валидация длины
+    if (recipient.length > 100 || text.length > 1000) {
+      return NextResponse.json(
+        { error: 'Превышена максимальная длина (получатель: 100, текст: 1000)' },
+        { status: 400 },
+      )
+    }
+
+    const newMsg = await db.staffMessage.create({
+      data: {
+        recipient: clampString(recipient.trim(), 100),
+        recipientCode: typeof recipientCode === 'number' ? recipientCode : null,
+        text: clampString(text.trim(), 1000),
+        sentById: user.id,
+        status: 'sent',
+      },
+      include: { sentBy: { select: { displayName: true } } },
+    })
+
+    return NextResponse.json(newMsg, { status: 201 })
   } catch (e) {
-    return NextResponse.json(
-      { error: 'Не удалось отправить сообщение', detail: String(e) },
-      { status: 500 },
-    );
+    return errorResponse('Не удалось отправить сообщение', 500, e)
   }
 }

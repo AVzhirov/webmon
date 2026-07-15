@@ -234,7 +234,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       {/* Низ — версия */}
       <div className="border-t border-sidebar-border px-4 py-3 shrink-0">
         <div className="text-[10px] text-muted-foreground/70 text-center">
-          v2.0 · Modern UI · 2024
+          v2.0 · Modern UI · 2026
         </div>
       </div>
     </div>

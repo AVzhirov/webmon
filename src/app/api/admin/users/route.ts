@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getCurrentUser } from '@/lib/session'
 import { hashPassword, verifyPassword } from '@/lib/auth'
+import { errorResponse, clampString } from '@/lib/api-utils'
 
 export async function GET() {
   try {
@@ -28,10 +29,7 @@ export async function GET() {
 
     return NextResponse.json(users)
   } catch (e) {
-    return NextResponse.json(
-      { error: 'Не удалось получить список пользователей', detail: String(e) },
-      { status: 500 },
-    )
+    return errorResponse('Не удалось получить список пользователей', 500, e)
   }
 }
 
@@ -60,6 +58,13 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       )
     }
+    // Валидация длины
+    if (username.length > 64 || password.length > 256) {
+      return NextResponse.json(
+        { error: 'Превышена максимальная длина (логин: 64, пароль: 256)' },
+        { status: 400 },
+      )
+    }
     if (password.length < 4) {
       return NextResponse.json(
         { error: 'Пароль должен быть не короче 4 символов' },
@@ -83,9 +88,9 @@ export async function POST(req: NextRequest) {
 
     const user = await db.user.create({
       data: {
-        username: username.trim(),
+        username: clampString(username.trim(), 64),
         passwordHash: hashPassword(password),
-        displayName: displayName?.trim() || username.trim(),
+        displayName: clampString(displayName?.trim() || username.trim(), 100),
         role,
         active: active ?? true,
       },
@@ -102,10 +107,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(user, { status: 201 })
   } catch (e) {
-    return NextResponse.json(
-      { error: 'Не удалось создать пользователя', detail: String(e) },
-      { status: 500 },
-    )
+    return errorResponse('Не удалось создать пользователя', 500, e)
   }
 }
 
@@ -200,10 +202,7 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json(updated)
   } catch (e) {
-    return NextResponse.json(
-      { error: 'Не удалось обновить пользователя', detail: String(e) },
-      { status: 500 },
-    )
+    return errorResponse('Не удалось обновить пользователя', 500, e)
   }
 }
 
@@ -247,9 +246,6 @@ export async function DELETE(req: NextRequest) {
     await db.user.delete({ where: { id } })
     return NextResponse.json({ ok: true })
   } catch (e) {
-    return NextResponse.json(
-      { error: 'Не удалось удалить пользователя', detail: String(e) },
-      { status: 500 },
-    )
+    return errorResponse('Не удалось удалить пользователя', 500, e)
   }
 }

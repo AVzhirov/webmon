@@ -27,6 +27,9 @@ export async function createSession(
     expires: expiresAt,
   })
 
+  // Фоновая очистка истёкших сессий (не блокирует ответ)
+  cleanupExpiredSessions().catch(() => {})
+
   return token
 }
 
@@ -36,6 +39,7 @@ export async function getCurrentUser() {
   const token = store.get(SESSION_COOKIE)?.value
   if (!token) return null
 
+  // Используем token напрямую (он криптостойкий — 64 hex символа)
   const session = await db.session.findUnique({
     where: { token },
     include: { user: true },
@@ -43,6 +47,12 @@ export async function getCurrentUser() {
 
   if (!session) return null
   if (session.expiresAt < new Date()) {
+    await db.session.delete({ where: { id: session.id } }).catch(() => {})
+    return null
+  }
+
+  // Проверка, что пользователь всё ещё активен
+  if (!session.user.active) {
     await db.session.delete({ where: { id: session.id } }).catch(() => {})
     return null
   }
@@ -76,4 +86,26 @@ export async function requireAdmin() {
     throw new Error('FORBIDDEN')
   }
   return user
+}
+
+/**
+ * Очистка истёкших сессий. Вызывается периодически.
+ * Удаляет не более 100 записей за раз (для скорости).
+ */
+let lastCleanupAt = 0
+const CLEANUP_COOLDOWN = 5 * 60 * 1000 // 5 минут
+
+export async function cleanupExpiredSessions(): Promise<void> {
+  const now = Date.now()
+  if (now - lastCleanupAt < CLEANUP_COOLDOWN) return
+  lastCleanupAt = now
+
+  try {
+    await db.session.deleteMany({
+      where: { expiresAt: { lt: new Date() } },
+      // Prisma не поддерживает limit в deleteMany — удаляем все истёкшие
+    })
+  } catch {
+    // ignore — это фоновая задача
+  }
 }

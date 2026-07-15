@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/session'
+import { errorResponse } from '@/lib/api-utils'
 import { promises as fs } from 'fs'
 import path from 'path'
 
@@ -39,9 +40,6 @@ export async function POST() {
         'Запрос на перезапуск отправлен. Служба перезапустится в течение 2-5 секунд. Если этого не произошло — запустите stop.bat и start.bat вручную.',
     })
   } catch (e) {
-    return NextResponse.json(
-      { error: 'Не удалось запросить перезапуск', detail: String(e) },
-      { status: 500 },
-    )
+    return errorResponse('Не удалось запросить перезапуск', 500, e)
   }
 }

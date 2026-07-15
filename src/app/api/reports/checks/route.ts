@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { errorResponse } from '@/lib/api-utils'
 import { parseCheckList, parseCheckDetail } from '@/lib/rk7/reports';
 import { withDemoDelay } from '../_helpers';
 
@@ -15,9 +16,6 @@ export async function GET(req: NextRequest) {
     const data = await parseCheckList();
     return withDemoDelay(NextResponse.json(data));
   } catch (e) {
-    return NextResponse.json(
-      { error: 'Failed to load checks', detail: String(e) },
-      { status: 500 },
-    );
+    return errorResponse('Failed to load checks', 500, e);
   }
 }

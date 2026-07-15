@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/session'
 import { getSettings, setSettings, writeEnvFile } from '@/lib/settings'
+import { errorResponse } from '@/lib/api-utils'
 import path from 'path'
 
 export async function GET() {
@@ -9,13 +10,13 @@ export async function GET() {
     if (!user) {
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 })
     }
+    if (user.role !== 'admin') {
+      return NextResponse.json({ error: 'Недостаточно прав' }, { status: 403 })
+    }
     const settings = await getSettings()
     return NextResponse.json(settings)
   } catch (e) {
-    return NextResponse.json(
-      { error: 'Не удалось получить настройки', detail: String(e) },
-      { status: 500 },
-    )
+    return errorResponse('Не удалось получить настройки', 500, e)
   }
 }
 
@@ -76,9 +77,6 @@ export async function PUT(req: NextRequest) {
         'Изменения порта применятся только после перезапуска службы/сервера. Используйте "Перезапустить службу" или stop.bat + start.bat.',
     })
   } catch (e) {
-    return NextResponse.json(
-      { error: 'Не удалось обновить настройки', detail: String(e) },
-      { status: 500 },
-    )
+    return errorResponse('Не удалось обновить настройки', 500, e)
   }
 }

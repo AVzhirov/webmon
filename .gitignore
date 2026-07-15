@@ -68,9 +68,6 @@ server.log
 /prisma/*.db
 /prisma/*.db-journal
 
-# Local messages store
-/public/demo-data/messages.json
-
 # IDE
 .idea/
 .vscode/

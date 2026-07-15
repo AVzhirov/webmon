@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 
@@ -28,7 +29,7 @@ const dotClasses: Record<NonNullable<BadgeProps['variant']>, string> = {
   muted: 'bg-muted-foreground',
 };
 
-export function StatusBadge({ children, variant = 'default', className, dot }: BadgeProps) {
+export const StatusBadge = memo(function StatusBadge({ children, variant = 'default', className, dot }: BadgeProps) {
   return (
     <span
       className={cn(
@@ -45,4 +46,4 @@ export function StatusBadge({ children, variant = 'default', className, dot }: B
       {children}
     </span>
   );
-}
+})

@@ -36,6 +36,7 @@ model Session {
   userAgent     String?
 
   @@index([userId])
+  @@index([expiresAt]) // для быстрой очистки истёкших сессий
 }
 
 /// RK7-сервер для мониторинга
@@ -51,6 +52,8 @@ model Server {
   isDefault     Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@index([enabled])
 }
 
 /// Сообщения персоналу (история)
@@ -63,6 +66,9 @@ model StaffMessage {
   sentBy        User?    @relation(fields: [sentById], references: [id], onDelete: SetNull)
   sentAt        DateTime @default(now())
   status        String   @default("sent") // sent | queued | failed
+
+  @@index([sentAt]) // для сортировки по дате
+  @@index([sentById])
 }
 
 /// Системные настройки (key-value). Хранит порт, host и др.

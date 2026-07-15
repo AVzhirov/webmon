@@ -305,7 +305,7 @@ export function LoginScreen() {
         </Card>
 
         <div className="mt-6 text-center text-xs text-muted-foreground">
-          © 2024 · Современная панель мониторинга R-Keeper 7
+          © 2026 · Современная панель мониторинга R-Keeper 7
         </div>
       </motion.div>
 

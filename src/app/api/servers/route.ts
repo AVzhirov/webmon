@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { bootstrapDatabase } from '@/lib/bootstrap'
+import { errorResponse } from '@/lib/api-utils'
 
 /** Публичный список серверов (без паролей) — для экрана авторизации. */
 export async function GET() {
@@ -26,9 +27,6 @@ export async function GET() {
       })),
     )
   } catch (e) {
-    return NextResponse.json(
-      { error: 'Не удалось получить список серверов', detail: String(e) },
-      { status: 500 },
-    )
+    return errorResponse('Не удалось получить список серверов', 500, e)
   }
 }

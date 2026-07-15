@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TrendingUp, TrendingDown, type LucideIcon } from 'lucide-react';
@@ -23,7 +24,7 @@ const accentMap: Record<NonNullable<KpiCardProps['accent']>, string> = {
   'chart-5': 'text-chart-5 bg-chart-5/15',
 };
 
-export function KpiCard({
+export const KpiCard = memo(function KpiCard({
   title,
   value,
   subtitle,
@@ -93,4 +94,4 @@ export function KpiCard({
       />
     </Card>
   );
-}
+})
