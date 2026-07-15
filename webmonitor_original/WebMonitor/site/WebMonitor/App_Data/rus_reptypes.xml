@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="Windows-1251" standalone="yes"?>
+<ReportTypes>
+ <ReportType>
+  <RepName>Waiters.rep</RepName>  
+  <RepShowName>Официанты</RepShowName>
+  <RepParamNum>2</RepParamNum>  
+  <RepParam1 showname="дата начала" name="startdata" type="data"/>
+  <RepParam2 showname="дата окончания" name="enddata" type="data"/>
+ </ReportType>
+ <ReportType>
+  <RepName>Categories.rep</RepName> 
+  <RepShowName>Категории</RepShowName>
+  <RepParamNum>2</RepParamNum>  
+  <RepParam1 showname="дата начала" name="startdata" type="data"/>
+  <RepParam2 showname="дата окончания" name="enddata" type="data"/>
+ </ReportType>
+ <ReportType>
+  <RepName>Discounts.rep</RepName>  
+  <RepShowName>Скидки</RepShowName>
+  <RepParamNum>2</RepParamNum>  
+  <RepParam1 showname="дата начала" name="startdata" type="data"/>
+  <RepParam2 showname="дата окончания" name="enddata" type="data"/>
+ </ReportType>
+ <ReportType>
+  <RepName>Stations.rep</RepName> 
+  <RepShowName>Станции</RepShowName>
+  <RepParamNum>2</RepParamNum>  
+  <RepParam1 showname="дата начала" name="startdata" type="data"/>
+  <RepParam2 showname="дата окончания" name="enddata" type="data"/>
+ </ReportType>
+ <ReportType>
+  <RepName>Payments.rep</RepName> 
+  <RepShowName>Оплаты</RepShowName>
+  <RepParamNum>2</RepParamNum>  
+  <RepParam1 showname="дата начала" name="startdata" type="data"/>
+  <RepParam2 showname="дата окончания" name="enddata" type="data"/>
+ </ReportType>
+ <ReportType>
+  <RepName>Dishes.rep</RepName> 
+  <RepShowName>Продажа блюд</RepShowName>
+  <RepParamNum>2</RepParamNum>  
+  <RepParam1 showname="дата начала" name="startdata" type="data"/>
+  <RepParam2 showname="дата окончания" name="enddata" type="data"/>
+ </ReportType>
+ <ReportType>
+  <RepName>TableStat.rep</RepName> 
+  <RepShowName>Статистика столов по времени</RepShowName>
+  <RepParamNum>2</RepParamNum>  
+  <RepParam1 showname="дата начала" name="startdata" type="data"/>
+  <RepParam2 showname="дата окончания" name="enddata" type="data"/>
+ </ReportType>
+ <ReportType>
+  <RepName>srByPeriod.rep</RepName> 
+  <RepShowName>Скорость обслуживания по периодам</RepShowName>
+  <RepParamNum>2</RepParamNum>  
+  <RepParam1 showname="дата начала" name="startdata" type="data"/>
+  <RepParam2 showname="дата окончания" name="enddata" type="data"/>
+ </ReportType>
+ <ReportType>
+  <RepName>srByWaiter.rep</RepName> 
+  <RepShowName>Скорость обслуживания по официантам</RepShowName>
+  <RepParamNum>2</RepParamNum>  
+  <RepParam1 showname="дата начала" name="startdata" type="data"/>
+  <RepParam2 showname="дата окончания" name="enddata" type="data"/>
+ </ReportType>
+ <ReportType>
+  <RepName>srByHour.rep</RepName> 
+  <RepShowName>Почасовая скорость обслуживания</RepShowName>
+  <RepParamNum>2</RepParamNum>  
+  <RepParam1 showname="дата начала" name="startdata" type="data"/>
+  <RepParam2 showname="дата окончания" name="enddata" type="data"/>
+ </ReportType>
+</ReportTypes>

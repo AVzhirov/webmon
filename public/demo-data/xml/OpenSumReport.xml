@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <rhead>
+    <rhrow>
+      <rhcol class="xl24">Официант</rhcol>
+      <rhcol class="xl24">Столов</rhcol>
+      <rhcol class="xl24">Гостей</rhcol>
+      <rhcol class="xl24">Сумма</rhcol>
+    </rhrow>
+  </rhead>
+  <rbody>
+    <rbrow>
+      <rbcol class="xl25">Ассмус Иван</rbcol>
+      <rbcol class="xl25">22</rbcol>
+      <rbcol class="xl25">81</rbcol>
+      <rbcol class="xl25">85429.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl26" weight="bold">Всего</rbcol>
+      <rbcol class="xl26" weight="bold">22</rbcol>
+      <rbcol class="xl26" weight="bold">81</rbcol>
+      <rbcol class="xl26" weight="bold">85429.00</rbcol>
+    </rbrow>
+  </rbody>
+  <rfoot>
+    <rfrow>
+      <rfcol class="xl27">
+      </rfcol>
+      <rfcol class="xl27">
+      </rfcol>
+      <rfcol class="xl27">
+      </rfcol>
+      <rfcol class="xl27">
+      </rfcol>
+    </rfrow>
+  </rfoot>
+</report>

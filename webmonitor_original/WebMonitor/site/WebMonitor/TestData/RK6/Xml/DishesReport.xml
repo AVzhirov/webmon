@@ -1,0 +1,496 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <rhead>
+    <rhrow>
+      <rhcol class="xl24">Код</rhcol>
+      <rhcol class="xl24">Название</rhcol>
+      <rhcol class="xl24">Кол.</rhcol>
+      <rhcol class="xl24">Сумма</rhcol>
+    </rhrow>
+  </rhead>
+  <rbody>
+    <rbrow>
+      <rbcol class="xl25">   6</rbcol>
+      <rbcol class="xl25">Каре ягненка</rbcol>
+      <rbcol class="xl25">3.0</rbcol>
+      <rbcol class="xl25">1230.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">   7</rbcol>
+      <rbcol class="xl25">Борщ</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">200.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">   8</rbcol>
+      <rbcol class="xl25">Свиные ребра</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">720.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  10</rbcol>
+      <rbcol class="xl25">Салат летний 100гр</rbcol>
+      <rbcol class="xl25">3.7</rbcol>
+      <rbcol class="xl25">443.44</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  16</rbcol>
+      <rbcol class="xl25">Тар-тар</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">20.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  18</rbcol>
+      <rbcol class="xl25">Кетчуп</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">10.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  19</rbcol>
+      <rbcol class="xl25">Горчица</rbcol>
+      <rbcol class="xl25">3.0</rbcol>
+      <rbcol class="xl25">15.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  20</rbcol>
+      <rbcol class="xl25">Маковый торт</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">300.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  21</rbcol>
+      <rbcol class="xl25">Колбаски из баранины</rbcol>
+      <rbcol class="xl25">5.0</rbcol>
+      <rbcol class="xl25">1900.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  22</rbcol>
+      <rbcol class="xl25">Большая домашняя котлета</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">420.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  24</rbcol>
+      <rbcol class="xl25">Рожок</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">60.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  27</rbcol>
+      <rbcol class="xl25">Мокачино</rbcol>
+      <rbcol class="xl25">10.0</rbcol>
+      <rbcol class="xl25">1500.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  33</rbcol>
+      <rbcol class="xl25">Салат Оливье 100 гр</rbcol>
+      <rbcol class="xl25">6.0</rbcol>
+      <rbcol class="xl25">783.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  36</rbcol>
+      <rbcol class="xl25">Сок в ассортименте</rbcol>
+      <rbcol class="xl25">6.0</rbcol>
+      <rbcol class="xl25">420.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  37</rbcol>
+      <rbcol class="xl25">Суп грибной</rbcol>
+      <rbcol class="xl25">3.0</rbcol>
+      <rbcol class="xl25">300.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  43</rbcol>
+      <rbcol class="xl25">Спрайт0,4</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">100.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  50</rbcol>
+      <rbcol class="xl25">Булочка</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">0.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  55</rbcol>
+      <rbcol class="xl25">Фишбургер</rbcol>
+      <rbcol class="xl25">9.0</rbcol>
+      <rbcol class="xl25">405.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  59</rbcol>
+      <rbcol class="xl25">Сок лимонный</rbcol>
+      <rbcol class="xl25">3.0</rbcol>
+      <rbcol class="xl25">450.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  61</rbcol>
+      <rbcol class="xl25">Гамбургер</rbcol>
+      <rbcol class="xl25">20.0</rbcol>
+      <rbcol class="xl25">2000.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  63</rbcol>
+      <rbcol class="xl25">Булочка с герычем</rbcol>
+      <rbcol class="xl25">4.0</rbcol>
+      <rbcol class="xl25">800.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  68</rbcol>
+      <rbcol class="xl25">Шашлык из баранины</rbcol>
+      <rbcol class="xl25">4.0</rbcol>
+      <rbcol class="xl25">1000.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">  73</rbcol>
+      <rbcol class="xl25">Куриный бульон с яйцом</rbcol>
+      <rbcol class="xl25">6.0</rbcol>
+      <rbcol class="xl25">360.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 100</rbcol>
+      <rbcol class="xl25">Twix</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">30.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 105</rbcol>
+      <rbcol class="xl25">отбивная с картофелем</rbcol>
+      <rbcol class="xl25">3.0</rbcol>
+      <rbcol class="xl25">300.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 112</rbcol>
+      <rbcol class="xl25">Рыба с овощами</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">100.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 116</rbcol>
+      <rbcol class="xl25">Рагу из баранины</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">200.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 118</rbcol>
+      <rbcol class="xl25">Бизнес-ланч с модиф</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">120.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 119</rbcol>
+      <rbcol class="xl25">Комплекс N 4</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">230.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 124</rbcol>
+      <rbcol class="xl25">Кент 1</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">200.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 134</rbcol>
+      <rbcol class="xl25">Салат фруктовый</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">240.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 137</rbcol>
+      <rbcol class="xl25">Омлет с грибами и сыром</rbcol>
+      <rbcol class="xl25">3.0</rbcol>
+      <rbcol class="xl25">180.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 138</rbcol>
+      <rbcol class="xl25">Блины</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">80.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 143</rbcol>
+      <rbcol class="xl25">Сок грейпфрутовый свеж.</rbcol>
+      <rbcol class="xl25">3.0</rbcol>
+      <rbcol class="xl25">240.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 147</rbcol>
+      <rbcol class="xl25">Фруктовый кекс</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">40.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 179</rbcol>
+      <rbcol class="xl25">Тушеная капуста</rbcol>
+      <rbcol class="xl25">3.0</rbcol>
+      <rbcol class="xl25">90.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 244</rbcol>
+      <rbcol class="xl25">Тар Тар из фруктов</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">350.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 246</rbcol>
+      <rbcol class="xl25">Комбо все запрет без деф</rbcol>
+      <rbcol class="xl25">3.0</rbcol>
+      <rbcol class="xl25">691.50</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 267</rbcol>
+      <rbcol class="xl25">ЩЩЩЩЩЩЩЩЩЩЩЩЩЩЩФФФФФФ</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">410.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 268</rbcol>
+      <rbcol class="xl25">Кепка</rbcol>
+      <rbcol class="xl25">5.0</rbcol>
+      <rbcol class="xl25">1000.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 271</rbcol>
+      <rbcol class="xl25">1234567891234567891234567</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">410.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 272</rbcol>
+      <rbcol class="xl25">в          в          в55</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">410.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 273</rbcol>
+      <rbcol class="xl25">ОООООООООООООООООООООООО</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">410.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 312</rbcol>
+      <rbcol class="xl25">Салат с кальмарами</rbcol>
+      <rbcol class="xl25">6.0</rbcol>
+      <rbcol class="xl25">900.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 313</rbcol>
+      <rbcol class="xl25">Фруктовая тарелка</rbcol>
+      <rbcol class="xl25">8.0</rbcol>
+      <rbcol class="xl25">1440.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 314</rbcol>
+      <rbcol class="xl25">Мороженое с клубникой</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">180.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 315</rbcol>
+      <rbcol class="xl25">Медальоны из говядины</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">365.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 316</rbcol>
+      <rbcol class="xl25">Филе тюрбо с луком порей</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">1220.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 317</rbcol>
+      <rbcol class="xl25">Лосось на пару</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">840.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 318</rbcol>
+      <rbcol class="xl25">Сибас с цукини</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">760.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 319</rbcol>
+      <rbcol class="xl25">Шашлык из курицы</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">360.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 320</rbcol>
+      <rbcol class="xl25">Тигровые креветки</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">1500.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 321</rbcol>
+      <rbcol class="xl25">Салат с омаром</rbcol>
+      <rbcol class="xl25">11.0</rbcol>
+      <rbcol class="xl25">4400.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 322</rbcol>
+      <rbcol class="xl25">Тарелка к водке</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">100.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 323</rbcol>
+      <rbcol class="xl25">Суп-крем из шпината</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">90.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 326</rbcol>
+      <rbcol class="xl25">Салат руккола с креветкам</rbcol>
+      <rbcol class="xl25">6.0</rbcol>
+      <rbcol class="xl25">2280.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 327</rbcol>
+      <rbcol class="xl25">Овощная тарелка</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">110.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 330</rbcol>
+      <rbcol class="xl25">Лагман</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">220.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 356</rbcol>
+      <rbcol class="xl25">Сок апельсиновый свеж.</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">80.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 365</rbcol>
+      <rbcol class="xl25">Итальянский</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">10.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 367</rbcol>
+      <rbcol class="xl25">Маффин</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">45.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 369</rbcol>
+      <rbcol class="xl25">Хот-дог</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">180.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 370</rbcol>
+      <rbcol class="xl25">Дабл дог</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">100.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 371</rbcol>
+      <rbcol class="xl25">Двойной чизбургер</rbcol>
+      <rbcol class="xl25">4.0</rbcol>
+      <rbcol class="xl25">300.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 385</rbcol>
+      <rbcol class="xl25">Суп харчо</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">100.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25"> 403</rbcol>
+      <rbcol class="xl25">Холодный бутерброд</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">13.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">8100</rbcol>
+      <rbcol class="xl25">Солянка рыбная</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">120.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">8101</rbcol>
+      <rbcol class="xl25">Суп овощной с грибами</rbcol>
+      <rbcol class="xl25">6.0</rbcol>
+      <rbcol class="xl25">600.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">8102</rbcol>
+      <rbcol class="xl25">Суп Лапша куриная</rbcol>
+      <rbcol class="xl25">2.0</rbcol>
+      <rbcol class="xl25">220.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">
+      </rbcol>
+      <rbcol class="xl25">?</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">0.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">
+      </rbcol>
+      <rbcol class="xl25">?</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">0.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">
+      </rbcol>
+      <rbcol class="xl25">?</rbcol>
+      <rbcol class="xl25">6.0</rbcol>
+      <rbcol class="xl25">0.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">
+      </rbcol>
+      <rbcol class="xl25">Кока-кола 0,5</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">0.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">
+      </rbcol>
+      <rbcol class="xl25">Спрайт0,3</rbcol>
+      <rbcol class="xl25">3.0</rbcol>
+      <rbcol class="xl25">0.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">
+      </rbcol>
+      <rbcol class="xl25">Суп харчо</rbcol>
+      <rbcol class="xl25">3.0</rbcol>
+      <rbcol class="xl25">0.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">
+      </rbcol>
+      <rbcol class="xl25">Кофе</rbcol>
+      <rbcol class="xl25">1.0</rbcol>
+      <rbcol class="xl25">0.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl26" weight="bold">
+      </rbcol>
+      <rbcol class="xl26" weight="bold">Всего</rbcol>
+      <rbcol class="xl26" weight="bold">
+      </rbcol>
+      <rbcol class="xl26" weight="bold">35700.94</rbcol>
+    </rbrow>
+  </rbody>
+  <rfoot>
+    <rfrow>
+      <rfcol class="xl27">
+      </rfcol>
+      <rfcol class="xl27">
+      </rfcol>
+      <rfcol class="xl27">
+      </rfcol>
+      <rfcol class="xl27">
+      </rfcol>
+    </rfrow>
+  </rfoot>
+</report>

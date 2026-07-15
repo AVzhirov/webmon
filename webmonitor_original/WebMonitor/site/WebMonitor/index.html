@@ -1,0 +1,343 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <!-- оформление в броузере -->
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta names="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>RK Web Monitoring</title>
+    <link rel="stylesheet" type="text/css" href="libs/dojox/mobile/themes/iphone/iphone.css"></link>
+	<link rel="stylesheet" type="text/css" href="CSS/wm.css"></link>
+	<!-- Загрузка модуля ядра dojo -->
+	<script src="libs/dojo/dojo.js" djConfig="parseOnLoad: true"></script>
+	<!-- Вспомогательные модули -->    
+	<script src="JavaScript/jQuery/jquery-3.1.0.min.js"></script>
+	<script src="JavaScript/enquire/enquire.min.js"></script>
+	<script src="JavaScript/hammer/jquery.hammer.min.js"></script>
+    <!--Основной модуль-->
+    <script src="JavaScript/src.js"></script>
+</head>
+<body>
+    
+<!-- Пустой View -->
+<div id="defaultView" data-dojo-type="dojox.mobile.View">
+</div>
+
+<!-- Начальный View -->
+<div id="startView" data-dojo-type="dojox.mobile.View">
+	<div data-dojo-type="dojox.mobile.Heading">
+		<div id="loginBtn" data-dojo-type="dojox.mobile.ToolBarButton" style="float:right;"><span class="wm-label">Вход</span></div>
+		<div class="wm-shortHeadLabel">Web мониторинг</div>
+	</div>	
+	<div id="scrView" data-dojo-type="dojox.mobile.View" data-dojo-props='height:"100px"'>
+		<div  data-dojo-type="dojox.mobile.RoundRect">
+			<table><tr>
+				<td><span>Пользователь:</span></td>
+				<td><input id="username" name="username" data-dojo-type="dojox.mobile.TextBox" value=""></input></td>
+			</tr><tr>
+				<td><span>Пароль:</span></td>
+				<td><input id="password" name="pass" type="password" data-dojo-type="dojox.mobile.TextBox" value=""></input></td>
+			</tr></table>
+		</div>
+        
+	</div>
+    <div id="serversDiv">
+        <div data-dojo-type="dojox.mobile.ScrollableView">
+        <h2 data-dojo-type="dojox.mobile.RoundRectCategory">Список серверов</h2> 
+        <ul id="serversList" data-dojo-type="dojox.mobile.RoundRectList" data-dojo-props='select:"single"'>
+        </ul>
+        </div>
+    </div>
+</div>
+    
+<!-- View суммарной статистики по серверам -->    
+<div id="totalWorkView" data-dojo-type="dojox.mobile.View">
+	<div data-dojo-type="dojox.mobile.Heading">
+		<div data-dojo-type="dojox.mobile.ToolBarButton" style="float:right;"  transition="fade" moveTo="startView"><span class="wm-exitBtn">Выход</span></div>
+		<div class="wm-shortHeadLabel">Web мониторинг</div>
+	</div>	
+    <div data-dojo-type="dojox.mobile.ScrollableView">
+	    <h2 data-dojo-type="dojox.mobile.RoundRectCategory">Суммарная статистика</h2> 
+	    <ul data-dojo-type="dojox.mobile.RoundRectList">
+			<li repId="16" id="item401" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item401(this.containerNode); }'>Системный балансовый отчет</li>  
+  		    <li repId="2" id="item402" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item402(this.containerNode); }'>Суммы заказов</li>  
+  		    <li repId="3" id="item403" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item403(this.containerNode); }'>Суммы официантов</li>  
+  		    <li repId="4" id="item404" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item404(this.containerNode); }'>Выручка</li>  
+  		    <li repId="5" id="item405" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item405(this.containerNode); }'>Расход блюд</li>  
+  		    <li repId="6" id="item406" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item406(this.containerNode); }'>Общая</li>  
+	    </ul>
+    </div>
+</div>    
+    
+<!-- View общей статистики -->
+<div id="totalCommonStatisticsView" data-dojo-type="dojox.mobile.View">
+	<div data-dojo-type="dojox.mobile.Heading" label="">
+		<div data-dojo-type="dojox.mobile.ToolBarButton" arrow="left" moveTo="totalWorkView" transition="slide" transitionDir="-1"><span class="wm-returnBtn">Возврат</span></div>
+		<div data-dojo-type="dojox.mobile.ToolBarButton" style="float:right;" transition="fade" moveTo="startView"><span class="wm-exitBtn">Выход</span></div>
+		<div class="wm-shortHeadLabel">Web монитор</div>
+	</div>	
+    <div data-dojo-type="dojox.mobile.ScrollableView">
+	    <h2 data-dojo-type="dojox.mobile.RoundRectCategory">Общая статистика</h2>
+	    <ul data-dojo-type="dojox.mobile.RoundRectList">
+		    <li repId="7" id="item407" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item407(this.containerNode); }'>по кассирам</li> 
+			<li repId="20" id="item410" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { Context.onReportItemClick(this.containerNode); }'>по официантам</li> 
+		    <li repId="9" id="item408" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item408(this.containerNode); }'>по станциям</li> 
+			<li repId="21" id="item411" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { Context.onReportItemClick(this.containerNode); }'>по группам станций</li>
+            <li repId="19" id="item409" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item409(this.containerNode); }'>по категориям заказов</li> 
+	    </ul>
+    </div>
+</div>
+	
+<!-- Основной View -->
+<div id="workView" data-dojo-type="dojox.mobile.View">
+	<div data-dojo-type="dojox.mobile.Heading">
+		<div data-dojo-type="dojox.mobile.ToolBarButton" style="float:right;"  transition="fade" moveTo="startView"><span class="wm-exitBtn">Выход</span></div>
+		<div class="wm-shortHeadLabel">Web мониторинг</div>
+	</div>	
+    <div data-dojo-type="dojox.mobile.ScrollableView">
+	    <h2 id="statHead" data-dojo-type="dojox.mobile.RoundRectCategory">Статистика</h2> 
+	    <ul data-dojo-type="dojox.mobile.RoundRectList">
+  		    <li repId="1" id="item21" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item21(this.containerNode); }'>Баланс</li>
+			<li repId="16" id="item27" data-dojo-type="dojox.mobile.ListItem" moveTo"#" data-dojo-props='clickable:true, onClick:function () { GH.item27(this.containerNode); }'></li>
+  		    <li repId="2" id="item22" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item22(this.containerNode); }'>Суммы заказов</li>  
+  		    <li repId="3" id="item23" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item23(this.containerNode); }'>Суммы официантов</li>  
+  		    <li repId="4" id="item24" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item24(this.containerNode); }'>Выручка</li>  
+  		    <li repId="5" id="item25" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item25(this.containerNode); }'>Расход блюд</li>  
+  		    <li repId="6" id="item26" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item26(this.containerNode); }'>Общая</li>  
+	    </ul>
+	    <h2 id="sendHead" data-dojo-type="dojox.mobile.RoundRectCategory">Отправить сообщение</h2> 
+	    <ul data-dojo-type="dojox.mobile.RoundRectList">
+  		    <li repId="17" id="item1000" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function() { GH.item1000(this.containerNode); }'>Отправить сообщение</li>
+	    </ul>
+	    <h2 id="plansHead" data-dojo-type="dojox.mobile.RoundRectCategory">План(ы) зала(ов)</h2>
+	    <ul id="hallPlansList" data-dojo-type="dojox.mobile.RoundRectList">
+			<!-- Заполняется динамически-->
+	    </ul>
+	    <h2 id="showHead" data-dojo-type="dojox.mobile.RoundRectCategory">Показать</h2>
+	    <ul data-dojo-type="dojox.mobile.RoundRectList">
+ 		    <li repId="11" id="item1" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item1(this.containerNode); }'>Сервис-печать</li> 
+ 		    <li repId="14" id="item2" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item2(this.containerNode); }'>Кассовая дата</li> 
+ 		    <li repId="15" id="item3" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item3(this.containerNode); }'>Период дня</li> 
+ 		    <li repId="12" id="item4" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item4(this.containerNode); }'>Заказы</li> 
+ 		    <li repId="13" id="item5" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item5(this.containerNode); }'>Список чеков</li> 
+	    </ul>
+		<h2 id="cubesHeader" data-dojo-type="dojox.mobile.RoundRectCategory">Отчеты</h2>
+		<ul id="cubesList" data-dojo-type="dojox.mobile.RoundRectList">
+			<!-- Заполняется динамически-->
+		</ul>
+    </div>
+</div>
+
+<!-- View общей статистики -->
+<div id="commonStatisticsView" data-dojo-type="dojox.mobile.View">
+	<div data-dojo-type="dojox.mobile.Heading">
+		<div data-dojo-type="dojox.mobile.ToolBarButton" arrow="left" moveTo="workView" transition="slide" transitionDir="-1"><span class="wm-returnBtn">Возврат</span></div>
+		<div data-dojo-type="dojox.mobile.ToolBarButton" style="float:right;" transition="fade" moveTo="startView"><span class="wm-exitBtn">Выход</span></div>
+		<div class="wm-shortHeadLabel">Web мониторинг</div>
+	</div>	
+    <div data-dojo-type="dojox.mobile.ScrollableView">
+	    <h2 data-dojo-type="dojox.mobile.RoundRectCategory">Общая статистика</h2>
+	    <ul data-dojo-type="dojox.mobile.RoundRectList">
+		    <li repId="7" id="item301" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item301(this.containerNode); }'>по кассирам</li> 
+		    <li repId="8" id="item302" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item302(this.containerNode); }'>по официантам</li> 
+		    <li repId="9" id="item303" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item303(this.containerNode); }'>по станциям</li> 
+		    <li repId="10" id="item304" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item304(this.containerNode); }'>по группам станций</li> 
+            <li repId="19" id="item305" data-dojo-type="dojox.mobile.ListItem" moveTo="#" data-dojo-props='clickable:true, onClick:function () { GH.item305(this.containerNode); }'>по категориям заказов</li> 
+	    </ul>
+    </div>
+</div>
+
+<!-- View отчетов -->
+<div id="reportView" data-dojo-type="dojox.mobile.View">
+    <div data-dojo-type="dojox.mobile.Heading">
+		<div id="reportViewReturnBtn" data-dojo-type="dojox.mobile.ToolBarButton" arrow="left" transition="slide"><span class="wm-returnBtn">Возврат</span></div>
+		<div data-dojo-type="dojox.mobile.ToolBarButton" style="float:right;"  transition="fade" moveTo="startView"><span class="wm-exitBtn">Выход</span></div>
+		<div class="wm-shortHeadLabel">Web монитор</div>
+	</div>	
+    <div id="reportScrollableView" data-dojo-type="dojox.mobile.ScrollableView" data-dojo-props='scrollDir:"vh"'>
+        <div id="reportPane" data-dojo-type="dojox.mobile.ContentPane"></div>
+    </div>
+</div>
+
+<!-- View выбора персонала -->
+<div id="personalView" data-dojo-type="dojox.mobile.View">
+	<div data-dojo-type="dojox.mobile.Heading" label="">
+		<div data-dojo-type="dojox.mobile.ToolBarButton" arrow="left" moveTo="workView" transition="slide" transitionDir="-1"><span class="wm-returnBtn">Возврат</span></div>
+		<div data-dojo-type="dojox.mobile.ToolBarButton" style="float:right;" transition="fade" moveTo="startView"><span class="wm-exitBtn">Выход</span></div>
+		<div class="wm-shortHeadLabel">Web монитор</div>
+	</div>
+	<div id="personalViewScroll" data-dojo-type="dojox.mobile.ScrollableView" data-dojo-props='scrollDir:"v"'>
+		<h2 id="personalHead" data-dojo-type="dojox.mobile.RoundRectCategory">Персонал</h2>
+		<ul id="personalList" data-dojo-type="dojox.mobile.RoundRectList">
+		<!-- Заполняется динамически-->
+		</ul>
+	</div>
+</div>
+
+<!-- View отправки сообщений -->
+<div id="messageSendView" data-dojo-type="dojox.mobile.View">
+	<div data-dojo-type="dojox.mobile.Heading" label="">
+		<div data-dojo-type="dojox.mobile.ToolBarButton" arrow="left" moveTo="personalView" transition="slide" transitionDir="-1"><span class="wm-returnBtn">Возврат</span></div>
+		<div data-dojo-type="dojox.mobile.ToolBarButton" style="float:right;" transition="fade" moveTo="startView"><span class="wm-exitBtn">Выход</span></div>
+		<div class="wm-shortHeadLabel">Web монитор</div>
+	</div>
+	<h2 id="sendMsgHead" data-dojo-type="dojox.mobile.RoundRectCategory">Отправка сообщения</h2>
+	<table width="100%" >
+		<tr>
+			<td style="padding-left:5px; padding-right:15px;">
+				<textarea id="messageTextArea" data-dojo-type="dojox.mobile.ExpandingTextArea" rows="5" cols="1" style="width: 100%; border-width:1px; font-size: 17px;"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td style="padding-right:5px;">				
+				<div id="messageSendBtn" data-dojo-type="dojox.mobile.ToolBarButton" style="float:right;margin:0px 5px" data-dojo-props='icon:"images/tab-icon-14h.png"' onclick=""><span class="wm-label">Отправить</span></div>
+				<div id="messageSendCancelBtn" data-dojo-type="dojox.mobile.ToolBarButton" style="float:right;margin:0px 5px" data-dojo-props='icon:"images/tab-icon-36h.png"' transition="slide" transitionDir="-1" moveTo="workView"><span class="wm-label">Отмена</span></div>
+			</td>
+		</tr>
+	
+	</table>
+</div>
+
+<!-- View плана зала-->
+<div id="hallPlanView" data-dojo-type="dojox.mobile.View">
+	<div data-dojo-type="dojox.mobile.Heading">
+		<div data-dojo-type="dojox.mobile.ToolBarButton" arrow="left" moveTo="workView" transition="slide" transitionDir="-1"><span class="wm-returnBtn">Возврат</span></div>
+		<div data-dojo-type="dojox.mobile.ToolBarButton" style="float:right;" transition="fade" moveTo="startView"><span class="wm-exitBtn">Выход</span></div>
+		<div class="wm-shortHeadLabel">Web монитор</div>
+	</div>
+	<div id="hallPlanViewScroll" data-dojo-type="dojox.mobile.ScrollableView" data-dojo-props='scrollDir:"hv"'>
+		<canvas id="hallPlanCanvas" style="z-index:0;left:0px;top:0px;"></canvas>
+		<canvas id="tablesCanvas" style="z-index:1;left:0px;top:0px;position:absolute;"></canvas>
+	</div>
+</div>
+
+<!-- View выбора официанта -->
+<div id="waitersView" data-dojo-type="dojox.mobile.View">
+	<div data-dojo-type="dojox.mobile.Heading" label="">
+		<div data-dojo-type="dojox.mobile.ToolBarButton" arrow="left" moveTo="workView" transition="slide" transitionDir="-1"><span class="wm-returnBtn">Возврат</span></div>
+		<div data-dojo-type="dojox.mobile.ToolBarButton" style="float:right;" transition="fade" moveTo="startView"><span class="wm-exitBtn">Выход</span></div>
+		<div class="wm-shortHeadLabel">Web монитор</div>
+	</div>
+	<div id="waitersViewScroll" data-dojo-type="dojox.mobile.ScrollableView" data-dojo-props='scrollDir:"v"'>
+		<h2 id="waitersHead" data-dojo-type="dojox.mobile.RoundRectCategory">Официанты</h2>
+		<ul id="waitersList" data-dojo-type="dojox.mobile.RoundRectList">
+		<!-- Заполняется динамически-->
+		</ul>
+	</div>
+</div>
+    
+<!-- View выбора стола/заказа -->
+<div id="tablesView" data-dojo-type="dojox.mobile.View">
+	<div data-dojo-type="dojox.mobile.Heading" label="">
+		<div id="tablesViewBackBtn" data-dojo-type="dojox.mobile.ToolBarButton" arrow="left" moveTo="waitersView" transition="slide" transitionDir="-1"><span class="wm-returnBtn">Возврат</span></div>
+		<div data-dojo-type="dojox.mobile.ToolBarButton" style="float:right;" transition="fade" moveTo="startView"><span class="wm-exitBtn">Выход</span></div>
+		<div class="wm-shortHeadLabel">Web монитор</div>
+	</div>
+	<div id="tablesViewScroll" data-dojo-type="dojox.mobile.ScrollableView" data-dojo-props='scrollDir:"v"'>
+		<h2 id="tablesViewCategory" data-dojo-type="dojox.mobile.RoundRectCategory">Столы</h2>
+		<ul id="tablesList" data-dojo-type="dojox.mobile.RoundRectList">
+		<!-- Заполняется динамически-->
+		</ul>
+	</div>
+</div>
+        
+<!-- View выбора чека -->
+<div id="checksView" data-dojo-type="dojox.mobile.View">
+	<div data-dojo-type="dojox.mobile.Heading" label="">
+		<div data-dojo-type="dojox.mobile.ToolBarButton" arrow="left" moveTo="workView" transition="slide" transitionDir="-1"><span class="wm-returnBtn">Возврат</span></div>
+		<div data-dojo-type="dojox.mobile.ToolBarButton" style="float:right;" transition="fade" moveTo="startView"><span class="wm-exitBtn">Выход</span></div>
+		<div class="wm-shortHeadLabel">Web монитор</div>
+	</div>
+	<div id="checksViewScroll" data-dojo-type="dojox.mobile.ScrollableView" data-dojo-props='scrollDir:"v"'>
+		<h2 id="checksHead" data-dojo-type="dojox.mobile.RoundRectCategory">Чеки</h2>
+		<ul id="checksList" data-dojo-type="dojox.mobile.RoundRectList">
+		<!-- Заполняется динамически-->
+		</ul>
+	</div>
+</div>
+	
+<!-- View выбора дат для кубов -->
+<div id="dateView" data-dojo-type="dojox.mobile.View">
+	<div data-dojo-type="dojox.mobile.Heading" label="">
+		<div data-dojo-type="dojox.mobile.ToolBarButton" arrow="left" moveTo="workView" transition="slide" transitionDir="-1"><span class="wm-returnBtn">Возврат</span></div>
+		<div id="goToCubesRepBtn" data-dojo-type="dojox.mobile.ToolBarButton" style="float:right;" transition="fade"><span class="wm-nextBtn">Далее</span></div>
+		<div class="wm-shortHeadLabel">Web монитор</div>
+	</div>	
+    <div id="dateViewScrollable" data-dojo-type="dojox.mobile.ScrollableView" data-dojo-props='scrollDir:"v"'>
+	    <h2 id="repNameHead" data-dojo-type="dojox.mobile.RoundRectCategory">Отчет</h2>
+		<div  data-dojo-type="dojox.mobile.RoundRect"><span id="reportNameSpan"></span></div>
+		<h2 id="repDatesHead" data-dojo-type="dojox.mobile.RoundRectCategory">Даты</h2>
+		<ul data-dojo-type="dojox.mobile.RoundRectList">
+			<li data-dojo-type="dojox.mobile.ListItem">
+				<div class="labelInputDiv">
+					<table class="table100">
+						<tr>
+							<td><div class="labelDiv"><span id="beginDateSpan">Начало</span></div></td>
+							<td class="tdInput">
+								<div class="inputDiv">
+									<input id="startDate" class="inputValue" type="date" id="delivDateInput" value=""/>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</li>
+			<li data-dojo-type="dojox.mobile.ListItem">
+				<div class="labelInputDiv">
+					<table class="table100">
+						<tr>
+							<td><div class="labelDiv"><span id="endDateSpan">Окончание</span></div></td>
+							<td class="tdInput">
+								<div class="inputDiv">
+									<input id="endDate" class="inputValue" type="date" id="Datetime-local1" value=""/>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</li>
+		</ul>
+    </div>
+</div>    	
+	
+<div id="dlgList" data-dojo-type="dojox.mobile.View">
+	<div data-dojo-type="dojox.mobile.Heading">
+		<div data-dojo-type="dojox.mobile.ToolBarButton" arrow="left" moveTo="hallPlanView" transition="fade" transitionDir="-1"><span class="wm-returnBtn">Возврат</span></div>
+		<div class="wm-shortHeadLabel">Web мониторинг</div>
+	</div>
+	<div id="tablesPane" data-dojo-type="dojox.mobile.ScrollableView" data-dojo-props='scrollDir:"v"'>
+		<h2 id="ordersHead" data-dojo-type="dojox.mobile.RoundRectCategory">Заказы</h2>
+		<ul id="tablesRoundRectList" data-dojo-type="dojox.mobile.RoundRectList">
+			<!-- Заполняется динамически-->
+		</ul>
+	</div>
+</div>
+	
+<!-- Dialogs -->
+<div id="dlgWarning" data-dojo-type="dojox.mobile.SimpleDialog">
+	 <div class="mblSimpleDialogTitle">Attention!</div>
+	 <div id="dlgWarningText" class="mblSimpleDialogText"></div>
+	 <button id="dlgWarningButton" data-dojo-type="dojox.mobile.Button" class="mblSimpleDialogButton">OK</button>
+</div>
+
+<div id="dlgInfo" data-dojo-type="dojox.mobile.SimpleDialog">
+    <div class="mblSimpleDialogTitle">Information</div>
+    <div id="dlgInfoText" class="mblSimpleDialogText"></div>
+    <button id="dlgInfoButton" data-dojo-type="dojox.mobile.Button" class="mblSimpleDialogButton">OK</button>
+</div>
+
+<!--<div id="dlgList" data-dojo-type="dojox.mobile.SimpleDialog">
+		<div id="tablesPane" data-dojo-type="dojox.mobile.ScrollablePane" data-dojo-props='height:"300px",roundCornerMask:true'>
+			<ul id="tablesRoundRectList" data-dojo-type="dojox.mobile.RoundRectList">
+			<!-- Заполняется динамически-->
+	<!--		</ul>
+		</div>
+		<button id="dlgListButton" data-dojo-type="dojox.mobile.Button" class="mblSimpleDialogButton">Закрыть</button>
+</div>-->
+
+
+<div id="dimensionDiv" style="margin-left: 5px"></div>
+
+</body>
+</html>

@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <rhead>
+    <rhrow>
+      <rhcol class="xl24">Наименование</rhcol>
+      <rhcol class="xl24">Кол.</rhcol>
+      <rhcol class="xl24">Сумма</rhcol>
+    </rhrow>
+  </rhead>
+  <rbody>
+    <rbrow>
+      <rbcol class="xl25b" color="blue">Группа 01</rbcol>
+      <rbcol class="xl25b" color="blue">
+      </rbcol>
+      <rbcol class="xl25b" color="blue">
+      </rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25t">   Платежная карта</rbcol>
+      <rbcol class="xl25">18.00</rbcol>
+      <rbcol class="xl25">18.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">Безнал. оплаты</rbcol>
+      <rbcol class="xl25">
+      </rbcol>
+      <rbcol class="xl25">18.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">Всего</rbcol>
+      <rbcol class="xl25">
+      </rbcol>
+      <rbcol class="xl25">18.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">Группа 04</rbcol>
+      <rbcol class="xl25">
+      </rbcol>
+      <rbcol class="xl25">
+      </rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25t">   Рубли</rbcol>
+      <rbcol class="xl25">16069.80</rbcol>
+      <rbcol class="xl25">16069.80</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">Наличные</rbcol>
+      <rbcol class="xl25">
+      </rbcol>
+      <rbcol class="xl25">16069.80</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25t">   VISA</rbcol>
+      <rbcol class="xl25">280.00</rbcol>
+      <rbcol class="xl25">280.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25t">   PinPad</rbcol>
+      <rbcol class="xl25">460.00</rbcol>
+      <rbcol class="xl25">460.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">Кредитные карты</rbcol>
+      <rbcol class="xl25">
+      </rbcol>
+      <rbcol class="xl25">740.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25t">   Платежная карта</rbcol>
+      <rbcol class="xl25">63.00</rbcol>
+      <rbcol class="xl25">63.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25">Безнал. оплаты</rbcol>
+      <rbcol class="xl25">
+      </rbcol>
+      <rbcol class="xl25">63.00</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl25b" color="blue">Всего</rbcol>
+      <rbcol class="xl25b" color="blue">
+      </rbcol>
+      <rbcol class="xl25b" color="blue">16872.80</rbcol>
+    </rbrow>
+    <rbrow>
+      <rbcol class="xl26" weight="bold">Всего</rbcol>
+      <rbcol class="xl26" weight="bold">
+      </rbcol>
+      <rbcol class="xl26" weight="bold">16890.80</rbcol>
+    </rbrow>
+  </rbody>
+  <rfoot>
+    <rfrow>
+      <rfcol class="xl27">
+      </rfcol>
+      <rfcol class="xl27">
+      </rfcol>
+      <rfcol class="xl27">
+      </rfcol>
+    </rfrow>
+  </rfoot>
+</report>

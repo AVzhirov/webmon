@@ -1,0 +1,62 @@
+<?xml version="1.0" standalone="yes"?> 
+<USERS>
+	<USER UN="100" PWD="100" CODE="4184" SHIFR="17">
+	<REPIDs>
+      <!--
+      1 - Баланс 
+      2 - Суммы заказов 
+      3 - Суммы официантов 
+      4 - Выручка 
+      5 - Расход блюд 
+      6 - Общая  
+      7 - по кассирам
+      8 - по официантам
+      9 - по станциям
+	  19 - по категориям заказов
+    20 - по официантам
+    21 - по группам станций
+      10 - по группам станций
+      11 - Сервис-печать
+      12 - Заказы 
+      13 - Чеки
+      14 - Кассовая дата
+      15 - Период дня
+	  16 - Системный балансовый отчет 
+	  17 - Отправка сообщения 
+	  18 - Планы залов -->
+      <REPID ID="1"/>
+      <REPID ID="2"/>
+      <REPID ID="3"/>
+      <REPID ID="4"/>
+      <REPID ID="5"/>
+      <REPID ID="6"/>
+      <REPID ID="7"/>
+      <REPID ID="8"/>
+      <REPID ID="9"/>
+      <REPID ID="10"/>
+      <REPID ID="11"/>
+      <REPID ID="12"/>
+      <REPID ID="13"/>
+      <REPID ID="14"/>
+      <REPID ID="15"/>
+	  <REPID ID="16"/>
+	  <REPID ID="17"/>
+	  <REPID ID="18"/> 
+	  <REPID ID="19"/>
+	  <REPID ID="20"/>
+	  <REPID ID="21"/>
+	  <REPID ID="22" Name="Waiters.rep" ShowName="Официанты" Type="Cube"/>
+	  <REPID ID="23" Name="Categories.rep" ShowName="Категории" Type="Cube"/>
+	  <REPID ID="24" Name="Discounts.rep" ShowName="Скидки" Type="Cube"/>
+	  <REPID ID="25" Name="Stations.rep" ShowName="Станции" Type="Cube"/>
+	  <REPID ID="26" Name="Payments.rep" ShowName="Оплаты" Type="Cube"/>
+	  <REPID ID="27" Name="Dishes.rep" ShowName="Продажа блюд" Type="Cube"/>
+	  <REPID ID="28" Name="TableStat.rep" ShowName="Статистика столов по времени" Type="Cube"/>
+	  <REPID ID="29" Name="srByPeriod.rep" ShowName="Скорость обслуживания по периодам" Type="Cube"/>
+	  <REPID ID="30" Name="srByWaiter.rep" ShowName="Скорость обслуживания по официантам" Type="Cube"/>
+	  <REPID ID="31" Name="srByHour.rep" ShowName="Почасовая скорость обслуживания" Type="Cube"/>
+ 	</REPIDs>
+	</USER>
+	<USER UN="2" PWD="2" />
+	<USER UN="3" PWD="3" />
+</USERS>
