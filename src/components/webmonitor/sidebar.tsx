@@ -19,6 +19,7 @@ import {
   UserCircle,
   UtensilsCrossed as Logo,
   ChevronRight,
+  Settings,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -147,6 +148,12 @@ const NAV_SECTIONS: NavSection[] = [
         label: 'Сообщения',
         icon: Send,
         description: 'Отправка персоналу',
+      },
+      {
+        id: 'settings',
+        label: 'Настройки',
+        icon: Settings,
+        description: 'Серверы и пользователи',
       },
     ],
   },

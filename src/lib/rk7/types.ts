@@ -194,8 +194,10 @@ export interface RKServer {
   id: string;
   name: string;
   address: string;
+  type?: 'demo' | 'tcp' | 'http';
   status: 'online' | 'offline' | 'demo';
   version?: string;
+  isDefault?: boolean;
 }
 
 /** Сообщение персоналу */

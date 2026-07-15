@@ -18,6 +18,7 @@ import { CashInfoView } from './views/cash-info-view';
 import { ServicePrintView } from './views/service-print-view';
 import { MessagesView } from './views/messages-view';
 import { PersonalView } from './views/personal-view';
+import { SettingsView } from './views/settings-view';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -87,6 +88,8 @@ function renderView(view: string) {
       return <MessagesView />;
     case 'personal':
       return <PersonalView />;
+    case 'settings':
+      return <SettingsView />;
     default:
       return <DashboardView />;
   }

@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import type { RKServer } from '@/lib/rk7/types';
+import { create } from 'zustand'
+import type { RKServer } from '@/lib/rk7/types'
 
 export type ViewId =
   | 'dashboard'
@@ -16,26 +16,36 @@ export type ViewId =
   | 'cash-info'
   | 'service-print'
   | 'messages'
-  | 'personal';
+  | 'personal'
+  | 'settings'
 
-interface AuthState {
-  user: string | null;
-  server: RKServer | null;
+export type UserRole = 'admin' | 'manager' | 'viewer'
+
+export interface CurrentUser {
+  id: string
+  username: string
+  displayName: string
+  role: UserRole
 }
 
-interface AppState extends AuthState {
-  view: ViewId;
-  selectedCheckId: number | null;
-  selectedHallId: number | null;
-  refreshKey: number; // bump to force refetch
-  lastRefreshedAt: Date | null;
+interface AppState {
+  user: CurrentUser | null
+  server: RKServer | null
+  view: ViewId
+  selectedCheckId: number | null
+  selectedHallId: number | null
+  refreshKey: number
+  lastRefreshedAt: Date | null
+  settingsOpen: boolean
 
-  login: (user: string, server: RKServer) => void;
-  logout: () => void;
-  setView: (view: ViewId) => void;
-  setSelectedCheckId: (id: number | null) => void;
-  setSelectedHallId: (id: number | null) => void;
-  refresh: () => void;
+  login: (user: CurrentUser, server: RKServer | null) => void
+  logout: () => void
+  setView: (view: ViewId) => void
+  setSelectedCheckId: (id: number | null) => void
+  setSelectedHallId: (id: number | null) => void
+  refresh: () => void
+  openSettings: () => void
+  closeSettings: () => void
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -46,6 +56,7 @@ export const useAppStore = create<AppState>((set) => ({
   selectedHallId: null,
   refreshKey: 0,
   lastRefreshedAt: null,
+  settingsOpen: false,
 
   login: (user, server) =>
     set({
@@ -71,4 +82,6 @@ export const useAppStore = create<AppState>((set) => ({
       refreshKey: s.refreshKey + 1,
       lastRefreshedAt: new Date(),
     })),
-}));
+  openSettings: () => set({ settingsOpen: true }),
+  closeSettings: () => set({ settingsOpen: false }),
+}))

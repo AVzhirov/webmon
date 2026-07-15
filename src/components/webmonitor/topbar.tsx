@@ -19,6 +19,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Sidebar } from './sidebar';
+import { SettingsDialog } from './settings-dialog';
 import { StatusBadge } from './ui/status-badge';
 import {
   RefreshCw,
@@ -30,15 +31,18 @@ import {
   Bell,
   Activity,
   Clock,
+  Settings as SettingsIcon,
+  Shield,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 
 export function Topbar() {
-  const { user, server, refresh, lastRefreshedAt, logout } = useAppStore();
+  const { user, server, refresh, lastRefreshedAt, logout, openSettings } = useAppStore();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [now, setNow] = useState<Date | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -47,12 +51,21 @@ export function Topbar() {
     return () => clearInterval(t);
   }, []);
 
-  const initials = (user ?? '?')
+  const initials = (user?.displayName ?? '?')
     .split(/\s+/)
     .map((w) => w[0])
     .join('')
     .slice(0, 2)
     .toUpperCase();
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch {
+      /* ignore */
+    }
+    logout();
+  };
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur-xl lg:px-6">
@@ -75,11 +88,11 @@ export function Topbar() {
         <div className="flex flex-col leading-tight">
           <span className="text-xs font-medium">{server?.name ?? '—'}</span>
           <span className="text-[10px] text-muted-foreground tabular-nums">
-            {server?.address}
+            {server?.address ?? 'не выбран'}
           </span>
         </div>
         <StatusBadge variant="success" dot className="ml-1">
-          DEMO
+          {server?.type === 'demo' ? 'DEMO' : 'ONLINE'}
         </StatusBadge>
       </div>
 
@@ -100,9 +113,7 @@ export function Topbar() {
         {lastRefreshedAt && (
           <div className="flex items-center gap-1.5">
             <span className="text-muted-foreground/60">·</span>
-            <span>
-              Обновлено {lastRefreshedAt.toLocaleTimeString('ru-RU')}
-            </span>
+            <span>Обновлено {lastRefreshedAt.toLocaleTimeString('ru-RU')}</span>
           </div>
         )}
       </div>
@@ -133,6 +144,19 @@ export function Topbar() {
         )}
       </Button>
 
+      {/* Настройки — только для админа */}
+      {user?.role === 'admin' && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setSettingsOpen(true)}
+          title="Настройки серверов и пользователей"
+          className="h-9 w-9"
+        >
+          <SettingsIcon className="h-4 w-4" />
+        </Button>
+      )}
+
       {/* Уведомления */}
       <Button variant="ghost" size="icon" className="h-9 w-9 relative">
         <Bell className="h-4 w-4" />
@@ -149,23 +173,32 @@ export function Topbar() {
               </AvatarFallback>
             </Avatar>
             <div className="hidden sm:flex flex-col leading-tight text-left">
-              <span className="text-xs font-medium">{user}</span>
-              <span className="text-[10px] text-muted-foreground">Менеджер</span>
+              <span className="text-xs font-medium">{user?.displayName}</span>
+              <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                {user?.role === 'admin' && <Shield className="h-2.5 w-2.5" />}
+                {user?.role === 'admin' ? 'Администратор' : user?.role === 'manager' ? 'Менеджер' : 'Просмотр'}
+              </span>
             </div>
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>
             <div className="flex flex-col">
-              <span className="text-sm font-medium">{user}</span>
+              <span className="text-sm font-medium">{user?.displayName}</span>
               <span className="text-xs text-muted-foreground font-normal">
-                {server?.name}
+                @{user?.username} · {server?.name}
               </span>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          {user?.role === 'admin' && (
+            <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+              <SettingsIcon className="h-4 w-4" />
+              Настройки системы
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem
-            onClick={() => logout()}
+            onClick={handleLogout}
             className="text-destructive focus:text-destructive"
           >
             <LogOut className="h-4 w-4" />
@@ -173,6 +206,14 @@ export function Topbar() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Settings dialog (только для админа) */}
+      {user?.role === 'admin' && (
+        <SettingsDialog
+          open={settingsOpen}
+          onOpenChange={setSettingsOpen}
+        />
+      )}
     </header>
   );
 }

@@ -6,6 +6,8 @@
 
 ## ✨ Возможности
 
+### Мониторинг
+
 | Раздел | Описание |
 |--------|----------|
 | **Дашборд** | Сводка смены: KPI (выручка, чеки, средний чек, активные столы, блюда), графики по часам, структура оплат, топ-10 официантов и блюд, последние чеки |
@@ -17,10 +19,25 @@
 | **Расход блюд** | Топ-10 + полная таблица с сортировкой и поиском |
 | **Официанты / Кассиры / Станции** | Выручка с детализацией по валютам и способам оплат |
 | **Персонал** | Справочник сотрудников с поиском |
-| **Планы залов** | Интерактивная SVG-карта столов с цветовой индикацией (занят/свободен/выбран) |
+| **Планы залов** | Интерактивная SVG-карта столов с цветовой индикацией |
 | **Кассовая дата** | Текущая кассовая дата, время и период смены |
 | **Сервис-печать** | Конфигурация принтеров и сервисных сообщений |
 | **Сообщения** | Отправка сообщений персоналу с историей |
+
+### Управление системой
+
+- 🛠 **Настройки серверов RK7** — добавление, редактирование, удаление, проверка соединения
+- 👥 **Управление пользователями** — создание, редактирование, блокировка, удаление
+- 🔐 **Роли**: admin (полный доступ), manager (отчёты + сообщения), viewer (только чтение)
+- 🔒 **Безопасность**: scrypt-хеширование паролей, cookie-сессии, защита от самоудаления админа
+
+### Поддерживаемые типы подключений к RK7
+
+| Тип | Описание | Пример |
+|-----|----------|--------|
+| 📊 Демо-XML | Папка с XML-отчётами (для тестов и обучения) | `public/demo-data/xml` |
+| 🌐 RK7 TCP | Прямое TCP-соединение с сервером RK7 | `192.168.1.10:15551` |
+| 🔗 RK7 HTTP | REST-эндпоинт XML-шлюза RK7 | `http://server/rk7/api` |
 
 ## 🎨 Дизайн
 
@@ -34,76 +51,136 @@
 
 - **Next.js 16** (App Router) + **TypeScript 5**
 - **Tailwind CSS 4** + **shadcn/ui** (48 компонентов)
+- **Prisma ORM** + **SQLite** (один файл БД — удобно для бэкапа)
 - **TanStack Query** — серверное состояние
 - **Zustand** — клиентское состояние
 - **Recharts** — графики
 - **Framer Motion** — анимации
 - **next-themes** — темы
+- **Node.js crypto** (scrypt) — хеширование паролей без внешних зависимостей
 
-## 🚀 Запуск
+## 🚀 Запуск в режиме разработки
 
 ```bash
 # Установка зависимостей
 bun install   # или npm install / pnpm install
 
+# Инициализация БД
+bun run db:push
+
 # Dev-сервер
 bun run dev   # http://localhost:3000
-
-# Production-сборка
-bun run build
-bun run start
 ```
 
-### Демо-режим
+### Первый вход
 
-В демо-режиме подходит любой логин и пароль. Все данные берутся из реальных XML-отчётов RK7, расположенных в `public/demo-data/xml/` (47 файлов: BalanceReport, MoneyTotal, DishesReport, CheckList, Check_1..22, Orders, MoneyByWaiters, MoneyByCache, MoneyByStations, HallPlans, TablesOfHall_*, Personal, CashDate, PeriodOfDay, ServicePrintReport и др.).
+- Логин: `admin`
+- Пароль: `admin`
+- ⚠️ **Смените пароль в Настройках после первого входа!**
 
-### Подключение к реальному RK7-серверу
+## 📦 Установка на Windows (production)
 
-Текущая версия работает только с локальными XML-файлами. Для подключения к живому серверу R-Keeper 7 нужно дописать TCP-адаптер в `src/lib/rk7/`, аналогичный оригинальному `XMLInterface.dll` из `WebMonitor.dll`:
+### Для конечного пользователя
 
-1. Прочитать `App_Data/servers.xml` со списком серверов (адрес + cryptKey)
-2. Установить TCP-сокетное соединение с сервером RK7
-3. Отправлять запросы отчётов и парсить возвращаемый XML теми же парсерами из `src/lib/rk7/reports.ts`
+1. Скачайте `RKWebMonitor-2.0.0-setup.exe` со страницы [Releases](https://github.com/AVzhirov/webmon/releases)
+2. Запустите от имени администратора
+3. Следуйте мастеру установки
+4. После установки автоматически откроется браузер на `http://localhost:3000`
+5. Войдите как `admin/admin` и настройте подключение к RK7
+
+**Node.js не требуется** — установщик включает portable Node.js v22.
+
+Подробности — в [Руководстве пользователя](installer/USERGUIDE.md).
+
+### Сборка установщика (для разработчика)
+
+Требуется Windows 10/11 x64 с установленным:
+- [Node.js](https://nodejs.org) 20+
+- [Bun](https://bun.sh)
+- [Inno Setup 6](https://jrsoftware.org/isdl.php)
+
+```powershell
+cd installer
+.\build-installer.ps1
+```
+
+Готовый `.exe` будет в папке `dist\`. Подробнее — в [installer/README.md](installer/README.md).
 
 ## 📁 Структура
 
 ```
-src/
-├── app/
-│   ├── api/reports/      # 13 API endpoints под каждый тип отчёта
-│   ├── api/servers/      # список RK-серверов
-│   ├── api/messages/     # отправка и история сообщений персоналу
-│   ├── layout.tsx        # корневой layout с ThemeProvider
-│   ├── page.tsx          # роутинг: логин или AppShell
-│   └── globals.css       # тёплая ресторанная тема + utilities
-├── components/
-│   ├── webmonitor/
-│   │   ├── views/        # 15 view-компонентов (по одному на раздел)
-│   │   ├── ui/           # KpiCard, SectionCard, ReportTable, StatusBadge
-│   │   ├── app-shell.tsx # каркас с sidebar + topbar + анимации
-│   │   ├── sidebar.tsx
-│   │   ├── topbar.tsx
-│   │   └── login-screen.tsx
-│   ├── ui/               # shadcn/ui компоненты (48 шт)
-│   ├── theme-provider.tsx
-│   └── query-provider.tsx
-├── hooks/
-│   └── use-report.ts     # обёртка над useQuery с refreshKey
-├── lib/
-│   ├── rk7/
-│   │   ├── types.ts      # TypeScript-типы для всех отчётов
-│   │   ├── parser.ts     # собственный XML-парсер без зависимостей
-│   │   └── reports.ts    # парсеры под каждый тип отчёта
-│   ├── format.ts         # форматирование денег/количеств/дат в ru-RU
-│   └── utils.ts
-└── store/
-    └── webmonitor.ts     # Zustand стор: auth, view, refresh
-
-public/demo-data/
-├── xml/                  # 47 XML-отчётов RK7 (демо-данные)
-└── hallplans/            # 6 изображений планов залов
+.
+├── installer/                   # Windows-установщик (Inno Setup)
+│   ├── webmonitor.iss           # Inno Setup script
+│   ├── build-installer.ps1      # Скрипт сборки установщика
+│   ├── build-installer.bat      # То же для двойного клика
+│   ├── start.bat                # Запуск сервера
+│   ├── stop.bat                 # Остановка сервера
+│   ├── RKWebMonitor.bat         # Главный запускатель
+│   ├── README-INSTALL.txt       # Краткая инструкция
+│   ├── USERGUIDE.md             # Подробное руководство
+│   ├── LICENSE.rtf              # Лицензия для Inno Setup
+│   └── README.md                # Документация по сборке
+├── prisma/
+│   └── schema.prisma            # Модели: User, Session, Server, StaffMessage
+├── public/demo-data/
+│   ├── xml/                     # 47 XML-отчётов RK7 (демо-данные)
+│   └── hallplans/               # 6 изображений планов залов
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── auth/            # /login, /logout, /me
+│   │   │   ├── admin/           # /servers, /users, /test-connection
+│   │   │   ├── servers/         # публичный список серверов
+│   │   │   ├── messages/        # отправка сообщений персоналу
+│   │   │   └── reports/         # 13 endpoints под каждый тип отчёта
+│   │   ├── layout.tsx           # корневой layout с ThemeProvider
+│   │   ├── page.tsx             # роутинг: логин или AppShell
+│   │   └── globals.css          # тёплая ресторанная тема
+│   ├── components/
+│   │   ├── webmonitor/
+│   │   │   ├── views/           # 16 view-компонентов (по одному на раздел)
+│   │   │   ├── ui/              # KpiCard, SectionCard, ReportTable, StatusBadge
+│   │   │   ├── app-shell.tsx    # каркас с sidebar + topbar + анимации
+│   │   │   ├── sidebar.tsx
+│   │   │   ├── topbar.tsx
+│   │   │   ├── login-screen.tsx
+│   │   │   └── settings-dialog.tsx  # диалог настроек (серверы + пользователи)
+│   │   ├── ui/                  # shadcn/ui компоненты (48 шт)
+│   │   ├── theme-provider.tsx
+│   │   └── query-provider.tsx
+│   ├── hooks/
+│   │   └── use-report.ts        # обёртка над useQuery с refreshKey
+│   ├── lib/
+│   │   ├── rk7/
+│   │   │   ├── types.ts         # TypeScript-типы для всех отчётов
+│   │   │   ├── parser.ts        # собственный XML-парсер без зависимостей
+│   │   │   └── reports.ts       # парсеры под каждый тип отчёта
+│   │   ├── auth.ts              # хеширование паролей (scrypt) + токены
+│   │   ├── session.ts           # cookie-сессии
+│   │   ├── bootstrap.ts         # инициализация БД при первом запуске
+│   │   ├── db.ts                # Prisma client
+│   │   ├── format.ts            # форматирование денег/количеств/дат в ru-RU
+│   │   └── utils.ts
+│   └── store/
+│       └── webmonitor.ts        # Zustand стор: auth, view, refresh, settings
+└── README.md
 ```
+
+## 📖 Документация
+
+- [**Руководство пользователя**](installer/USERGUIDE.md) — полная инструкция по установке и использованию
+- [**Документация установщика**](installer/README.md) — как собрать .exe-установщик
+- [**Краткая инструкция**](installer/README-INSTALL.txt) — текстовый файл для пользователя
+
+## 🔐 Безопасность
+
+- Пароли пользователей хранятся в БД как **scrypt-хеш** (16-байтный salt, 64-байтный ключ)
+- Сессии — 7 дней, cookie с `HttpOnly` + `SameSite=Lax`
+- В production-режиме `Secure` flag для HTTPS
+- Защита от понижения роли / удаления последнего админа
+- Проверка авторизации на каждом API-запросе
+- Пароли RK7 хранятся в открытом виде (необходимо для подключения) — обеспечьте физическую защиту файла БД
 
 ## 📄 Лицензия
 
@@ -112,3 +189,9 @@ MIT — используйте свободно. Тестовые XML-данны
 ## 🤝 Автор
 
 Переписано с устаревшего ASP.NET WebForms приложения на современный стек Next.js 16.
+
+## 🔗 Ссылки
+
+- **Репозиторий:** https://github.com/AVzhirov/webmon
+- **Issues:** https://github.com/AVzhirov/webmon/issues
+- **Releases:** https://github.com/AVzhirov/webmon/releases

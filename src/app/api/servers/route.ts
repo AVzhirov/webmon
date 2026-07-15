@@ -1,24 +1,34 @@
-import { NextResponse } from 'next/server';
-import type { RKServer } from '@/lib/rk7/types';
+import { NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+import { bootstrapDatabase } from '@/lib/bootstrap'
 
-// Демо-список серверов (имитация servers.xml)
-const DEMO_SERVERS: RKServer[] = [
-  {
-    id: 'demo-1',
-    name: 'Обучение',
-    address: '172.22.5.199:15551',
-    status: 'demo',
-    version: 'RK7 DEMO',
-  },
-  {
-    id: 'demo-2',
-    name: 'Test',
-    address: '172.22.3.185:14567',
-    status: 'demo',
-    version: 'RK7 DEMO',
-  },
-];
-
+/** Публичный список серверов (без паролей) — для экрана авторизации. */
 export async function GET() {
-  return NextResponse.json(DEMO_SERVERS);
+  try {
+    await bootstrapDatabase()
+    const servers = await db.server.findMany({
+      where: { enabled: true },
+      orderBy: [{ isDefault: 'desc' }, { name: 'asc' }],
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        address: true,
+        isDefault: true,
+      },
+    })
+
+    return NextResponse.json(
+      servers.map((s) => ({
+        ...s,
+        status: s.type === 'demo' ? 'demo' : 'online',
+        version: s.type === 'demo' ? 'DEMO' : undefined,
+      })),
+    )
+  } catch (e) {
+    return NextResponse.json(
+      { error: 'Не удалось получить список серверов', detail: String(e) },
+      { status: 500 },
+    )
+  }
 }

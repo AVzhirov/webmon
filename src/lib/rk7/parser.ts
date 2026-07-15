@@ -1,8 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import * as xml2js from 'xml2js'; // we'll use a tiny custom parser instead
 
-// Лёгкий парсер XML без зависимостей (fast-xml-parser уже может быть установлен, но сделаем свой для надёжности)
+// Лёгкий парсер XML без зависимостей.
 // Используем DOMParser в браузере, на сервере — простой regex-парсер с поддержкой вложенности.
 
 export interface XmlNode {

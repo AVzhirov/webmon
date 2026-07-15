@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Prisma schema for RK Web Monitor
+// Хранилище: SQLite (один файл rkwebmon.db рядом с приложением — удобно для бэкапа)
 
 generator client {
   provider = "prisma-client-js"
@@ -13,20 +10,57 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// Пользователь системы. Роли: admin / manager / viewer
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  username      String   @unique
+  passwordHash  String
+  displayName   String
+  role          String   @default("viewer") // admin | manager | viewer
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions      Session[]
+  messages      StaffMessage[]
 }
 
-model Post {
-  id        String   @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+/// Сессия пользователя (cookie-based auth)
+model Session {
+  id            String   @id @default(cuid())
+  token         String   @unique
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  expiresAt     DateTime
+  userAgent     String?
+
+  @@index([userId])
+}
+
+/// RK7-сервер для мониторинга
+model Server {
+  id            String   @id @default(cuid())
+  name          String
+  type          String   @default("demo") // demo | tcp | http
+  address       String   // IP:порт (для tcp) или URL (для http) или путь к папке (для demo)
+  cryptKey      String?
+  username      String?  // логин для подключения к RK7
+  password      String?  // пароль (хранится в открытом виде — это пароль RK7, не пользователя)
+  enabled       Boolean  @default(true)
+  isDefault     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+/// Сообщения персоналу (история)
+model StaffMessage {
+  id            String   @id @default(cuid())
+  recipient     String
+  recipientCode Int?
+  text          String
+  sentById      String?
+  sentBy        User?    @relation(fields: [sentById], references: [id], onDelete: SetNull)
+  sentAt        DateTime @default(now())
+  status        String   @default("sent") // sent | queued | failed
 }
