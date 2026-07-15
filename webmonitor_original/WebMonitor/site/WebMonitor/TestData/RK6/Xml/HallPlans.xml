@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<report>
-  <plan hrf="0" shifr="2">Demo 1</plan>
-  <plan hrf="1" shifr="3">Demo 2</plan>
-  <plan hrf="2" shifr="5">Мой</plan>
-  <plan hrf="3" shifr="6">Сочи</plan>
-  <plan hrf="4" shifr="9">Балкон</plan>
-  <plan hrf="5" shifr="10">Каскад</plan>
-</report>

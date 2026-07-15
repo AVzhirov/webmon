@@ -52,3 +52,28 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# Original archived RAR + extracted source (kept locally for reference only)
+/upload/
+/webmonitor_original/
+/tool-results/
+
+# Z.ai dev scripts + sandbox runtime artefacts
+/.zscripts/
+/.z-ai-config/
+/.zai/
+
+# Local SQLite db
+/db/
+/prisma/*.db
+/prisma/*.db-journal
+
+# Local messages store
+/public/demo-data/messages.json
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+Thumbs.db

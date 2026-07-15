@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<report>
-  <tbl stl="POSITION: absolute; LEFT: 31px; WIDTH: 50px; TOP: 145px;" Name="1" Left="31" Top="145" Cover="1" Summa="27800.00" />
-  <tbl stl="POSITION: absolute; LEFT: 90px; WIDTH: 50px; TOP: 145px;" Name="2" Left="90" Top="145" Cover="2" Summa="100.00" />
-  <tbl stl="POSITION: absolute; LEFT: 150px; WIDTH: 50px; TOP: 146px;" Name="3" Left="150" Top="146" Cover="1" Summa="250.00" />
-  <tbl stl="POSITION: absolute; LEFT: 206px; WIDTH: 50px; TOP: 145px;" Name="4" Left="206" Top="145" Cover="2" Summa="10460.00" />
-  <tbl stl="POSITION: absolute; LEFT: 552px; WIDTH: 50px; TOP: 46px;" Name="5" Left="552" Top="46" Cover="3" Summa="10234.00" />
-</report>
