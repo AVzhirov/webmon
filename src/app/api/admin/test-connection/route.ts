@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (type === 'tcp') {
-      return await checkTcp(addressClamped)
+      return await checkTcp(addressClamped, body)
     }
 
     if (type === 'http') {
@@ -96,27 +96,48 @@ async function checkDemoPath(address: string) {
   }
 }
 
-/** Проверка TCP-соединения — с таймаутом 3 сек. */
-async function checkTcp(address: string) {
+/** Проверка TCP-соединения — с реальным RK7 XML запросом. */
+async function checkTcp(address: string, body: any) {
   const m = address.match(/^([\w.-]+):(\d+)$/)
   if (!m) {
     return NextResponse.json({
       ok: false,
-      error: 'Неверный формат. Ожидается IP:порт (например 192.168.1.10:15551)',
+      error: 'Invalid format. Expected IP:port (e.g. 192.168.1.10:15551)',
     })
   }
   const host = m[1]
   const port = parseInt(m[2], 10)
   if (port < 1 || port > 65535) {
-    return NextResponse.json({ ok: false, error: 'Порт должен быть 1-65535' })
+    return NextResponse.json({ ok: false, error: 'Port must be 1-65535' })
   }
 
-  const ok = await testTcpConnection(host, port, 3000)
-  return NextResponse.json(
-    ok
-      ? { ok: true, message: `Соединение с ${host}:${port} установлено` }
-      : { ok: false, error: `Не удалось подключиться к ${host}:${port}` },
-  )
+  // Сначала — простая TCP-проверка (быстро)
+  const tcpOk = await testTcpConnection(host, port, 3000)
+  if (!tcpOk) {
+    return NextResponse.json({
+      ok: false,
+      error: `Cannot connect to ${host}:${port} (TCP timeout/refused)`,
+    })
+  }
+
+  // Если есть username/password — пробуем реальный RK7 запрос
+  const username = body?.username || ''
+  const password = body?.password || ''
+  if (username || password) {
+    const { testRK7Connection } = await import('@/lib/rk7/tcp-client')
+    const result = await testRK7Connection({
+      address,
+      username,
+      password,
+      cryptKey: body?.cryptKey || null,
+    })
+    return NextResponse.json(result)
+  }
+
+  return NextResponse.json({
+    ok: true,
+    message: `TCP connection to ${host}:${port} established (RK7 auth not tested)`,
+  })
 }
 
 function testTcpConnection(host: string, port: number, timeoutMs: number): Promise<boolean> {
