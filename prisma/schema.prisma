@@ -2,7 +2,13 @@
 // Хранилище: SQLite (один файл rkwebmon.db рядом с приложением — удобно для бэкапа)
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  // ВАЖНО: binaryTargets включает Windows, чтобы Prisma Client работал
+  // на Windows-машине, даже если сборка выполнялась на Linux.
+  // "native" — для текущей платформы (Linux при сборке .exe)
+  // "windows" — для Windows при установке через NSSM
+  // "debian-openssl-3.0.x" — явно для Linux (на случай если native определился неправильно)
+  binaryTargets = ["native", "windows", "debian-openssl-3.0.x"]
 }
 
 datasource db {

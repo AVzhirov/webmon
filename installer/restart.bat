@@ -1,33 +1,42 @@
 @echo off
-REM ============================================================
-REM  RK Web Monitor — перезапуск службы
-REM  Используется для применения изменений порта и других настроек.
-REM ============================================================
+title RK Web Monitor - Restart Service
 
 setlocal
-cd /d "%~dp0"
+cd /d "%~dp0" 2>nul
 
-set NSSM=%~dp0bin\nssm.exe
-set SERVICE_NAME=RKWebMonitor
+set "NSSM=%~dp0bin\nssm.exe"
+set "SERVICE_NAME=RKWebMonitor"
 
-echo Перезапуск RK Web Monitor...
+echo ============================================================
+echo   RK Web Monitor - Restart Service
+echo ============================================================
+echo.
 
-if exist "%NSSM%" (
-    "%NSSM%" status %SERVICE_NAME% >nul 2>nul
-    if not errorlevel 1 (
-        echo Остановка службы...
-        "%NSSM%" stop %SERVICE_NAME%
-        timeout /t 2 /nobreak >nul
-        echo Запуск службы...
-        "%NSSM%" start %SERVICE_NAME%
-        echo Служба перезапущена.
-        timeout /t 2 /nobreak >nul
-        exit /b 0
-    )
+net session >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] Administrator rights required!
+    echo Right-click -^> Run as administrator
+    pause
+    exit /b 1
 )
 
-echo Служба не установлена. Используйте stop.bat + start.bat.
-call "%~dp0stop.bat"
-call "%~dp0start.bat"
+if exist "%NSSM%" (
+    echo Stopping service...
+    "%NSSM%" stop %SERVICE_NAME%
+    timeout /t 2 /nobreak >nul
+    echo Starting service...
+    "%NSSM%" start %SERVICE_NAME%
+    if errorlevel 1 (
+        echo [WARN] Failed to restart.
+    ) else (
+        echo [OK] Service restarted.
+    )
+) else (
+    echo [ERROR] NSSM not found: %NSSM%
+)
+
+echo.
+echo Press any key to close...
+pause >nul
 
 endlocal

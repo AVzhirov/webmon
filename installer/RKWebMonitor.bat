@@ -1,8 +1,4 @@
 @echo off
-REM ============================================================
-REM  RK Web Monitor — главный запускатель
-REM  Двойной клик по этому файлу = запуск приложения
-REM ============================================================
-
-cd /d "%~dp0"
-call start.bat
+REM RK Web Monitor - Main launcher
+cd /d "%~dp0" 2>nul
+call "%~dp0start.bat"

@@ -1,46 +1,69 @@
 @echo off
-REM ============================================================
-REM  RK Web Monitor — Удаление службы
-REM  Запускать от имени АДМИНИСТРАТОРА
-REM ============================================================
+title RK Web Monitor - Uninstall
 
 setlocal
-cd /d "%~dp0"
+cd /d "%~dp0" 2>nul
 
-set NSSM=%~dp0bin\nssm.exe
-set SERVICE_NAME=RKWebMonitor
+set "NSSM=%~dp0bin\nssm.exe"
+set "SERVICE_NAME=RKWebMonitor"
 
-echo Удаление RK Web Monitor...
+echo ============================================================
+echo   RK Web Monitor - Uninstall
+echo ============================================================
+echo.
 
 net session >nul 2>&1
 if errorlevel 1 (
-    echo [ERROR] Требуются права администратора!
+    echo [ERROR] Administrator rights required!
+    echo Right-click -^> Run as administrator
     pause
     exit /b 1
 )
 
-echo [1/4] Остановка службы...
-"%NSSM%" stop %SERVICE_NAME% >nul 2>&1
+echo This will:
+echo   1. Stop service %SERVICE_NAME%
+echo   2. Remove service %SERVICE_NAME%
+echo   3. Remove Firewall rule
+echo   4. Remove Start Menu shortcuts
+echo.
+echo Database and logs will be PRESERVED.
+echo.
+set /p CONFIRM=Continue? (y/N):
+if /i not "%CONFIRM%"=="y" (
+    echo Cancelled.
+    pause
+    exit /b 0
+)
 
-echo [2/4] Удаление службы...
-"%NSSM%" remove %SERVICE_NAME% confirm >nul 2>&1
+echo.
+echo [1/4] Stopping service...
+if exist "%NSSM%" (
+    "%NSSM%" stop %SERVICE_NAME% >nul 2>&1
+    echo [2/4] Removing service...
+    "%NSSM%" remove %SERVICE_NAME% confirm >nul 2>&1
+) else (
+    echo [WARN] NSSM not found, trying sc...
+    sc stop %SERVICE_NAME% >nul 2>&1
+    sc delete %SERVICE_NAME% >nul 2>&1
+)
 
-echo [3/4] Удаление правила Firewall...
+echo [3/4] Removing Firewall rule...
 netsh advfirewall firewall delete rule name="RK Web Monitor" >nul 2>&1
 
-echo [4/4] Удаление ярлыков...
+echo [4/4] Removing Start Menu shortcuts...
 rd /s /q "%ProgramData%\Microsoft\Windows\Start Menu\Programs\RK Web Monitor" 2>nul
 
 echo.
 echo ============================================================
-echo   Удаление завершено!
+echo   Uninstall completed!
 echo ============================================================
 echo.
-echo   База данных сохранена: %~dp0data\rkwebmon.db
-echo   Логи сохранены:        %~dp0logs\
+echo Database preserved: %~dp0data\rkwebmon.db
+echo Logs preserved:    %~dp0logs\
 echo.
-echo   Для полного удаления удалите папку: %~dp0
+echo To fully remove - delete folder: %~dp0
 echo.
-pause
+echo Press any key to close...
+pause >nul
 
 endlocal
