@@ -96,6 +96,19 @@ async function checkDemoPath(address: string) {
   }
 }
 
+/** Проверка HTTPS-соединения с RK7 XML Interface. */
+async function checkHttp(address: string, body: any) {
+  const { testRK7Connection } = await import('@/lib/rk7/tcp-client')
+  const result = await testRK7Connection({
+    address,
+    username: body?.username || '',
+    password: body?.password || '',
+    cryptKey: body?.cryptKey || null,
+    type: 'http',
+  })
+  return NextResponse.json(result)
+}
+
 /** Проверка TCP-соединения — с реальным RK7 XML запросом. */
 async function checkTcp(address: string, body: any) {
   const m = address.match(/^([\w.-]+):(\d+)$/)
@@ -130,6 +143,7 @@ async function checkTcp(address: string, body: any) {
       username,
       password,
       cryptKey: body?.cryptKey || null,
+      type: 'tcp',
     })
     return NextResponse.json(result)
   }
@@ -162,7 +176,7 @@ function testTcpConnection(host: string, port: number, timeoutMs: number): Promi
 }
 
 /** Проверка HTTP-запроса — только HEAD, таймаут 5 сек. */
-async function checkHttp(address: string) {
+async function checkHttpOld(address: string) {
   // Валидация URL
   let url: URL
   try {
