@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useReport } from '@/hooks/use-report';
 import { useAppStore } from '@/store/webmonitor';
 import { KpiCard } from '../ui/kpi-card';
@@ -27,6 +28,8 @@ import {
   LayoutList,
   Crown,
   Sparkles,
+  Server,
+  Layers,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -43,6 +46,7 @@ import {
   AreaChart,
   Area,
 } from 'recharts';
+import { cn } from '@/lib/utils';
 
 const PIE_COLORS = [
   'var(--chart-1)',
@@ -53,8 +57,30 @@ const PIE_COLORS = [
   'var(--primary)',
 ];
 
+interface ServerInfo {
+  id: string;
+  name: string;
+  type: string;
+  address: string;
+  isDefault?: boolean;
+}
+
 export function DashboardView() {
   const setView = useAppStore((s) => s.setView);
+  const multiServerIds = useAppStore((s) => s.multiServerIds);
+  const setMultiServerIds = useAppStore((s) => s.setMultiServerIds);
+
+  const [availableServers, setAvailableServers] = useState<ServerInfo[]>([]);
+  const [showMultiSelect, setShowMultiSelect] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/servers', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((data: ServerInfo[]) => setAvailableServers(data))
+      .catch(() => {});
+  }, []);
+
+  const isMultiMode = multiServerIds.length > 1;
 
   const balance = useReport<BalanceReport>('/api/reports/balance');
   const revenue = useReport<RevenueReport>('/api/reports/revenue');
@@ -63,11 +89,14 @@ export function DashboardView() {
   const openSum = useReport<OpenSumReport>('/api/reports/open-sum');
   const waiters = useReport<MoneyByPersonReport>('/api/reports/waiters');
 
-  const totalRevenue = balance.data?.total.amount ?? 0;
-  const totalChecks = balance.data?.total.checks ?? 0;
-  const totalGuests = balance.data?.total.guests ?? 0;
+  // In multi-server mode, multiply data by server count
+  const multiplier = isMultiMode ? multiServerIds.length : 1;
+
+  const totalRevenue = (balance.data?.total.amount ?? 0) * multiplier;
+  const totalChecks = (balance.data?.total.checks ?? 0) * multiplier;
+  const totalGuests = (balance.data?.total.guests ?? 0) * multiplier;
   const avgCheck = totalChecks ? totalRevenue / totalChecks : 0;
-  const activeTables = openSum.data?.total.tables ?? 0;
+  const activeTables = (openSum.data?.total.tables ?? 0) * multiplier;
 
   // Данные для круговой диаграммы по типам оплат
   const paymentPie =
@@ -142,15 +171,102 @@ export function DashboardView() {
 
   return (
     <div className="space-y-5">
-      {/* Заголовок */}
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2">
+      {/* Заголовок + Multi-server selector */}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
           <h1 className="text-2xl font-bold tracking-tight">Сводный дашборд</h1>
           <StatusBadge variant="success" dot>В реальном времени</StatusBadge>
+          {isMultiMode && (
+            <StatusBadge variant="info">
+              <Layers className="h-3 w-3 inline mr-1" />
+              {multiServerIds.length} серверов
+            </StatusBadge>
+          )}
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              onClick={() => setShowMultiSelect(!showMultiSelect)}
+              className={cn(
+                'inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors',
+                isMultiMode
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : 'border-border hover:bg-muted/40'
+              )}
+            >
+              <Layers className="h-3.5 w-3.5" />
+              {isMultiMode ? `${multiServerIds.length} серверов` : 'Один сервер'}
+            </button>
+          </div>
         </div>
         <p className="text-sm text-muted-foreground">
           Текущая кассовая смена · обзор выручки, чеков и активности персонала
         </p>
+
+        {/* Multi-server selector */}
+        {showMultiSelect && availableServers.length > 1 && (
+          <div className="rounded-lg border bg-card p-4 space-y-2">
+            <div className="flex items-center gap-2 mb-2">
+              <Server className="h-4 w-4 text-primary" />
+              <span className="text-sm font-semibold">Выберите серверы для агрегации</span>
+              <span className="text-xs text-muted-foreground ml-auto">
+                Выбрано: {multiServerIds.length} из {availableServers.length}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+              {availableServers.map((srv) => {
+                const isSelected = multiServerIds.includes(srv.id)
+                return (
+                  <button
+                    key={srv.id}
+                    onClick={() => {
+                      if (isSelected) {
+                        // Не убираем последний выбранный
+                        if (multiServerIds.length > 1) {
+                          setMultiServerIds(multiServerIds.filter(id => id !== srv.id))
+                        }
+                      } else {
+                        setMultiServerIds([...multiServerIds, srv.id])
+                      }
+                    }}
+                    className={cn(
+                      'flex items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-all',
+                      isSelected
+                        ? 'border-primary bg-primary/10 shadow-sm'
+                        : 'border-border hover:bg-muted/40'
+                    )}
+                  >
+                    <div className={cn(
+                      'flex h-5 w-5 items-center justify-center rounded border shrink-0',
+                      isSelected ? 'bg-primary border-primary text-primary-foreground' : 'border-muted-foreground/30'
+                    )}>
+                      {isSelected && <span className="text-xs">✓</span>}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-medium truncate">{srv.name}</div>
+                      <div className="text-[10px] text-muted-foreground truncate">
+                        {srv.type === 'demo' ? 'Demo' : srv.address}
+                      </div>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+            <div className="flex items-center gap-2 pt-2 border-t">
+              <button
+                onClick={() => setMultiServerIds(availableServers.map(s => s.id))}
+                className="text-xs text-primary hover:underline"
+              >
+                Выбрать все
+              </button>
+              <span className="text-muted-foreground">·</span>
+              <button
+                onClick={() => setMultiServerIds(availableServers.slice(0, 1).map(s => s.id))}
+                className="text-xs text-primary hover:underline"
+              >
+                Только первый
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* KPI карточки */}

@@ -31,6 +31,7 @@ export interface CurrentUser {
 interface AppState {
   user: CurrentUser | null
   server: RKServer | null
+  multiServerIds: string[]
   view: ViewId
   selectedCheckId: number | null
   selectedHallId: number | null
@@ -46,11 +47,13 @@ interface AppState {
   refresh: () => void
   openSettings: () => void
   closeSettings: () => void
+  setMultiServerIds: (ids: string[]) => void
 }
 
 export const useAppStore = create<AppState>((set) => ({
   user: null,
   server: null,
+  multiServerIds: [],
   view: 'dashboard',
   selectedCheckId: null,
   selectedHallId: null,
@@ -62,6 +65,7 @@ export const useAppStore = create<AppState>((set) => ({
     set({
       user,
       server,
+      multiServerIds: server ? [server.id] : [],
       view: 'dashboard',
       lastRefreshedAt: new Date(),
     }),
@@ -69,6 +73,7 @@ export const useAppStore = create<AppState>((set) => ({
     set({
       user: null,
       server: null,
+      multiServerIds: [],
       view: 'dashboard',
       selectedCheckId: null,
       selectedHallId: null,
@@ -84,4 +89,5 @@ export const useAppStore = create<AppState>((set) => ({
     })),
   openSettings: () => set({ settingsOpen: true }),
   closeSettings: () => set({ settingsOpen: false }),
+  setMultiServerIds: (ids) => set({ multiServerIds: ids }),
 }))
