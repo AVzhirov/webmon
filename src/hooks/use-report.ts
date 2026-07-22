@@ -11,12 +11,30 @@ async function fetchJson<T>(url: string): Promise<T> {
   return r.json() as Promise<T>;
 }
 
-/** Хук с автоматическим рефечом при изменении refreshKey. */
+/** Хук с автоматическим рефечом при изменении refreshKey.
+ *  Автоматически добавляет serverId к запросу.
+ */
 export function useReport<T>(endpoint: string, enabled = true) {
   const refreshKey = useAppStore((s) => s.refreshKey);
+  const server = useAppStore((s) => s.server);
+  const multiServerIds = useAppStore((s) => s.multiServerIds);
+
+  // Добавляем serverId к URL
+  let url = endpoint;
+  if (server?.id) {
+    const sep = endpoint.includes('?') ? '&' : '?';
+    url = `${endpoint}${sep}serverId=${server.id}`;
+  }
+
+  // В мульти-серверном режиме добавляем все IDs
+  if (multiServerIds.length > 1) {
+    const sep = url.includes('?') ? '&' : '?';
+    url = `${url}${sep}multiIds=${multiServerIds.join(',')}`;
+  }
+
   return useQuery<T>({
-    queryKey: [endpoint, refreshKey],
-    queryFn: () => fetchJson<T>(endpoint),
+    queryKey: [url, refreshKey],
+    queryFn: () => fetchJson<T>(url),
     enabled,
     staleTime: 30_000,
     retry: 1,

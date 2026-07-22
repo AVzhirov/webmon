@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server'
 
 /**
- * Демо-данные XML — статичны, можно кэшировать на клиенте на 5 минут.
- * Ускоряет повторные загрузки отчётов.
+ * Для демо-данных добавляет небольшую задержку и cache-control.
+ * Для реальных данных (RK7) не используется — они идут напрямую.
  */
 export async function withDemoDelay<T extends NextResponse>(resp: T, ms = 80): Promise<T> {
   await new Promise((r) => setTimeout(r, ms))
-  // Cache-Control: приватный (только для браузера), 5 минут
-  resp.headers.set('Cache-Control', 'private, max-age=300, stale-while-revalidate=600')
+  resp.headers.set('Cache-Control', 'private, max-age=30, stale-while-revalidate=60')
   return resp
 }
