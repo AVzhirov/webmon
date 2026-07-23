@@ -10,13 +10,12 @@ REM ============================================================
 
 title RK Web Monitor - Direct Server
 
-setlocal
+setlocal enabledelayedexpansion
 cd /d "%~dp0" 2>nul
 
 set "APP_DIR=%~dp0"
 set "NODE_EXE=%APP_DIR%node\node.exe"
 set "SERVER_JS=%APP_DIR%app\server.js"
-set "WATCHDOG_JS=%APP_DIR%bin\watchdog.js"
 set "DATA_DIR=%APP_DIR%data"
 set "PORT=8083"
 
@@ -40,50 +39,51 @@ if not exist "%SERVER_JS%" (
     exit /b 1
 )
 
-REM Create data/logs dirs if not exist
+REM Create dirs
 if not exist "%DATA_DIR%" mkdir "%DATA_DIR%" 2>nul
 if not exist "%APP_DIR%logs" mkdir "%APP_DIR%logs" 2>nul
 
-REM Check if .env exists, create if not
-if not exist "%APP_DIR%app\.env" (
-    echo [INFO] Creating .env file...
-    set "DB_PATH=%APP_DIR%data\rkwebmon.db"
-    set "DB_PATH=!DB_PATH:\=/!"
-    (
-        echo DATABASE_URL=file:!DB_PATH!
-        echo PORT=%PORT%
-        echo HOSTNAME=0.0.0.0
-        echo NODE_ENV=production
-    ) > "%APP_DIR%app\.env"
-    echo   .env created
-)
+REM Build DATABASE_URL with forward slashes (Prisma requirement)
+set "DB_PATH_WIN=%APP_DIR%data\rkwebmon.db"
+set "DB_PATH_URL=%DB_PATH_WIN:\=/%"
 
-REM Check if database exists, init if not
+REM Create .env file (always overwrite to ensure correct path)
+echo [INFO] Writing .env file...
+(
+    echo DATABASE_URL=file:%DB_PATH_URL%
+    echo PORT=%PORT%
+    echo HOSTNAME=0.0.0.0
+    echo NODE_ENV=production
+) > "%APP_DIR%app\.env"
+echo   DATABASE_URL=file:%DB_PATH_URL%
+echo.
+
+REM Init database if not exists
 if not exist "%DATA_DIR%\rkwebmon.db" (
     echo [INFO] Database not found. Initializing...
     cd /d "%APP_DIR%app"
-    set "DATABASE_URL=file:!DB_PATH!"
+    set "DATABASE_URL=file:%DB_PATH_URL%"
     if exist "scripts\init-db.js" (
         "%NODE_EXE%" "scripts\init-db.js"
     ) else (
-        echo [WARN] init-db.js not found. Database may not work.
+        echo [WARN] init-db.js not found.
     )
     cd /d "%APP_DIR%"
     echo.
 )
 
-REM Check if service is running — stop it to avoid port conflict
-echo [INFO] Checking if service is running...
+REM Stop service if running (avoid port conflict)
+echo [INFO] Checking service...
 "%APP_DIR%bin\nssm.exe" status RKWebMonitor >nul 2>&1
 if not errorlevel 1 (
-    echo [INFO] Service RKWebMonitor is running. Stopping it to avoid port conflict...
+    echo [INFO] Stopping service to free port %PORT%...
     "%APP_DIR%bin\nssm.exe" stop RKWebMonitor >nul 2>&1
     timeout /t 2 /nobreak >nul
     echo   Service stopped.
     echo.
 )
 
-REM Start server directly
+REM Start server
 echo ============================================================
 echo   Starting server directly (not as service)...
 echo   Press Ctrl+C to stop.
@@ -94,11 +94,8 @@ echo.
 cd /d "%APP_DIR%app"
 "%NODE_EXE%" server.js
 
-REM If we get here, server exited
 echo.
 echo [INFO] Server stopped.
-echo.
-echo Press any key to close...
 pause >nul
 
 endlocal
