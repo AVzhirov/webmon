@@ -107,16 +107,16 @@ NODE_ENV=production
 EOF
 
 # Copy bat files and docs
-cp installer/start.bat "$BUILD_DIR/"
-cp installer/stop.bat "$BUILD_DIR/"
-cp installer/restart.bat "$BUILD_DIR/"
-cp installer/RKWebMonitor.bat "$BUILD_DIR/"
+cp installer/install.bat "$BUILD_DIR/"
+cp installer/uninstall.bat "$BUILD_DIR/"
+cp installer/update.bat "$BUILD_DIR/"
+cp installer/diagnose.bat "$BUILD_DIR/"
+cp installer/run-direct.bat "$BUILD_DIR/"
+cp installer/START_HERE.bat "$BUILD_DIR/"
 cp installer/README-INSTALL.txt "$BUILD_DIR/"
 cp installer/USERGUIDE.md "$BUILD_DIR/"
 cp installer/LICENSE.rtf "$BUILD_DIR/"
 cp README.md "$BUILD_DIR/"
-cp installer/install.bat "$BUILD_DIR/"
-cp installer/uninstall.bat "$BUILD_DIR/" 2>/dev/null || true
 
 # Remove Linux binaries from node_modules
 echo "  Removing Linux-specific binaries..."
