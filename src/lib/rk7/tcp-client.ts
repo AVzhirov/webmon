@@ -112,151 +112,205 @@ async function rk7HttpsRequest(
 /**
  * TCP-запрос к RK7 через rk7xml.dll протокол.
  *
- * Протокол (из анализа RK7XML.dll и документации):
- * 1. TCP connect
- * 2. Отправка XML-запроса через CallRK7XMLRPC2:
- *    - AddressName: IP:порт
- *    - ConnectName: произвольная строка (идентификатор соединения)
- *    - Request: XML-тело
- *    - RequestSize: длина XML
- *    - RequestNum: 0 (сервер генерирует сам)
- *
- * Формат данных по TCP (из strings RK7XML.dll):
- * 1. send handshake
- * 2. recv handshake
- * 3. send request size (4 bytes LE)
- * 4. send request body (XML UTF-8)
- * 5. recv Result Request Number (4 bytes)
- * 6. recv Result XML length (4 bytes LE)
- * 7. recv Result XML body
+ * Пробуем 3 варианта протокола (т.к. точный формат неизвестен):
+ * Вариант 1: Без handshake — сразу size + XML
+ * Вариант 2: Raw XML — отправляем XML как текст, читаем ответ как текст
+ * Вариант 3: HTTP POST over TCP — отправляем HTTP-запрос
  */
 async function rk7TcpRequest(
   config: RK7ServerConfig,
   xmlCommand: string,
 ): Promise<RK7ReportResult> {
-  const net = await import('net')
+  // Пробуем варианты по очереди
+  // Вариант 1: size + XML (без handshake)
+  let result = await rk7TcpVariant1(config, xmlCommand)
+  if (result.success) return result
 
+  // Вариант 2: raw XML
+  result = await rk7TcpVariant2(config, xmlCommand)
+  if (result.success) return result
+
+  // Вариант 3: HTTP over TCP
+  result = await rk7TcpVariant3(config, xmlCommand)
+  if (result.success) return result
+
+  return { success: false, error: 'All TCP protocol variants failed. Try HTTPS type instead.' }
+}
+
+/** Вариант 1: size(4 LE) + XML body → recv requestNum(4) + size(4 LE) + XML */
+async function rk7TcpVariant1(
+  config: RK7ServerConfig,
+  xmlCommand: string,
+): Promise<RK7ReportResult> {
+  const net = await import('net')
   return new Promise((resolve) => {
     const m = config.address.match(/^([\w.-]+):(\d+)$/)
-    if (!m) {
-      resolve({ success: false, error: 'Invalid address format. Expected IP:port' })
-      return
-    }
-
-    const host = m[1]
-    const port = parseInt(m[2], 10)
-    const timeoutMs = REQUEST_TIMEOUT
-
+    if (!m) { resolve({ success: false, error: 'Invalid address' }); return }
+    const host = m[1], port = parseInt(m[2], 10)
     let socket: net.Socket | null = null
-    let responseBuffer = Buffer.alloc(0)
-    let phase: 'connect' | 'handshakeSend' | 'handshakeRecv' | 'reqSize' | 'reqBody' | 'respReqNum' | 'respLen' | 'respBody' = 'connect'
-    let expectedLength = 0
-    let timedOut = false
+    let buf = Buffer.alloc(0)
+    let phase: 'send' | 'reqNum' | 'respLen' | 'respBody' = 'send'
+    let expectedLen = 0
+    let done = false
 
-    const cleanup = () => {
-      if (socket) {
-        socket.removeAllListeners()
-        socket.destroy()
-        socket = null
-      }
-    }
-
-    const timeoutHandle = setTimeout(() => {
-      timedOut = true
-      cleanup()
-      resolve({ success: false, error: `Timeout (${timeoutMs}ms) in phase ${phase}` })
-    }, timeoutMs)
+    const cleanup = () => { if (socket) { socket.removeAllListeners(); socket.destroy(); socket = null } }
+    const timer = setTimeout(() => { if (!done) { done = true; cleanup(); resolve({ success: false, error: `V1 Timeout in ${phase}` }) } }, 8000)
 
     try {
       socket = new net.Socket()
-      socket.setTimeout(timeoutMs)
-
-      // ConnectName — произвольная строка, идентификатор соединения
-      const connectName = `WM${Date.now()}`
-      const connectNameBuf = Buffer.from(connectName, 'utf-8')
+      socket.setTimeout(8000)
 
       socket.on('connect', () => {
-        // Шаг 1: Отправляем handshake
-        // Формат handshake: 4 байта — версия протокола (0x00000002 для v2)
-        // Или просто 4 нулевых байта для базового handshake
-        const handshake = Buffer.alloc(4, 0)
-        socket!.write(handshake)
-        phase = 'handshakeRecv'
+        // Сразу отправляем: 4 байта длины + XML
+        const xmlBuf = Buffer.from(xmlCommand, 'utf-8')
+        const sizeBuf = Buffer.alloc(4)
+        sizeBuf.writeUInt32LE(xmlBuf.length, 0)
+        socket!.write(Buffer.concat([sizeBuf, xmlBuf]))
+        phase = 'reqNum'
       })
 
       socket.on('data', (data: Buffer) => {
-        responseBuffer = Buffer.concat([responseBuffer, data])
-
+        buf = Buffer.concat([buf, data])
         while (true) {
-          if (phase === 'handshakeRecv') {
-            if (responseBuffer.length < 4) break
-            // Читаем handshake ответ (4 байта) — игнорируем
-            responseBuffer = responseBuffer.subarray(4)
-
-            // Шаг 2: Отправляем XML-запрос
-            // Формат: 4 байта длины (LE) + XML-тело (UTF-8)
-            const xmlBuffer = Buffer.from(xmlCommand, 'utf-8')
-            const sizeBuffer = Buffer.alloc(4)
-            sizeBuffer.writeUInt32LE(xmlBuffer.length, 0)
-
-            socket!.write(Buffer.concat([sizeBuffer, xmlBuffer]))
-            phase = 'respReqNum'
-          } else if (phase === 'respReqNum') {
-            // Читаем 4 байта — номер запроса (RequestNum)
-            if (responseBuffer.length < 4) break
-            responseBuffer = responseBuffer.subarray(4)
+          if (phase === 'reqNum') {
+            if (buf.length < 4) break
+            buf = buf.subarray(4) // skip request number
             phase = 'respLen'
           } else if (phase === 'respLen') {
-            // Читаем 4 байта — длину XML-ответа
-            if (responseBuffer.length < 4) break
-            expectedLength = responseBuffer.readUInt32LE(0)
-            responseBuffer = responseBuffer.subarray(4)
+            if (buf.length < 4) break
+            expectedLen = buf.readUInt32LE(0)
+            buf = buf.subarray(4)
             phase = 'respBody'
-
-            if (expectedLength === 0) {
-              clearTimeout(timeoutHandle)
-              cleanup()
-              resolve({ success: true, xml: '' })
+            if (expectedLen === 0) {
+              if (!done) { done = true; clearTimeout(timer); cleanup(); resolve({ success: true, xml: '' }) }
               return
             }
           } else if (phase === 'respBody') {
-            // Читаем XML-ответ
-            if (responseBuffer.length < expectedLength) break
-
-            const xmlResponse = responseBuffer.subarray(0, expectedLength).toString('utf-8')
-            responseBuffer = responseBuffer.subarray(expectedLength)
-
-            clearTimeout(timeoutHandle)
-            cleanup()
-            resolve({ success: true, xml: xmlResponse })
+            if (buf.length < expectedLen) break
+            const xml = buf.subarray(0, expectedLen).toString('utf-8')
+            if (!done) { done = true; clearTimeout(timer); cleanup(); resolve({ success: true, xml }) }
             return
-          } else {
-            break
           }
         }
       })
 
-      socket.on('error', (err: Error) => {
-        clearTimeout(timeoutHandle)
-        cleanup()
-        if (timedOut) return
-        resolve({ success: false, error: err.message })
-      })
-
-      socket.on('timeout', () => {
-        clearTimeout(timeoutHandle)
-        cleanup()
-        if (timedOut) return
-        resolve({ success: false, error: `Socket timeout in phase ${phase}` })
-      })
-
+      socket.on('error', () => { if (!done) { done = true; clearTimeout(timer); cleanup(); resolve({ success: false, error: 'V1 connection error' }) } })
+      socket.on('timeout', () => { if (!done) { done = true; clearTimeout(timer); cleanup(); resolve({ success: false, error: 'V1 timeout' }) } })
       socket.connect(port, host)
     } catch (e) {
-      clearTimeout(timeoutHandle)
-      cleanup()
-      resolve({ success: false, error: e instanceof Error ? e.message : String(e) })
+      if (!done) { done = true; clearTimeout(timer); cleanup(); resolve({ success: false, error: 'V1 exception' }) }
     }
   })
+}
+
+/** Вариант 2: raw XML text → recv raw XML text (до закрытия соединения) */
+async function rk7TcpVariant2(
+  config: RK7ServerConfig,
+  xmlCommand: string,
+): Promise<RK7ReportResult> {
+  const net = await import('net')
+  return new Promise((resolve) => {
+    const m = config.address.match(/^([\w.-]+):(\d+)$/)
+    if (!m) { resolve({ success: false, error: 'Invalid address' }); return }
+    const host = m[1], port = parseInt(m[2], 10)
+    let socket: net.Socket | null = null
+    let buf = Buffer.alloc(0)
+    let done = false
+
+    const cleanup = () => { if (socket) { socket.removeAllListeners(); socket.destroy(); socket = null } }
+    const timer = setTimeout(() => {
+      if (!done) {
+        done = true; cleanup()
+        if (buf.length > 0) {
+          const xml = buf.toString('utf-8')
+          resolve({ success: true, xml })
+        } else {
+          resolve({ success: false, error: 'V2 timeout (no data)' })
+        }
+      }
+    }, 8000)
+
+    try {
+      socket = new net.Socket()
+      socket.setTimeout(8000)
+
+      socket.on('connect', () => {
+        // Отправляем raw XML
+        socket!.write(xmlCommand, 'utf-8')
+      })
+
+      socket.on('data', (data: Buffer) => {
+        buf = Buffer.concat([buf, data])
+        // Проверяем — есть ли в ответе закрывающий тег
+        const text = buf.toString('utf-8')
+        if (text.includes('</RK7QueryResult>') || text.includes('</report>') || text.includes('</error>')) {
+          if (!done) {
+            done = true; clearTimeout(timer); cleanup()
+            resolve({ success: true, xml: text })
+          }
+        }
+      })
+
+      socket.on('close', () => {
+        if (!done) {
+          done = true; clearTimeout(timer)
+          if (buf.length > 0) {
+            resolve({ success: true, xml: buf.toString('utf-8') })
+          } else {
+            resolve({ success: false, error: 'V2 connection closed (no data)' })
+          }
+        }
+      })
+
+      socket.on('error', () => { if (!done) { done = true; clearTimeout(timer); cleanup(); resolve({ success: false, error: 'V2 connection error' }) } })
+      socket.on('timeout', () => {
+        if (!done) {
+          done = true; clearTimeout(timer); cleanup()
+          if (buf.length > 0) {
+            resolve({ success: true, xml: buf.toString('utf-8') })
+          } else {
+            resolve({ success: false, error: 'V2 timeout' })
+          }
+        }
+      })
+      socket.connect(port, host)
+    } catch (e) {
+      if (!done) { done = true; clearTimeout(timer); cleanup(); resolve({ success: false, error: 'V2 exception' }) }
+    }
+  })
+}
+
+/** Вариант 3: HTTP POST over TCP (some RK7 servers accept HTTP on XML port) */
+async function rk7TcpVariant3(
+  config: RK7ServerConfig,
+  xmlCommand: string,
+): Promise<RK7ReportResult> {
+  const m = config.address.match(/^([\w.-]+):(\d+)$/)
+  if (!m) return { success: false, error: 'Invalid address' }
+  const host = m[1], port = parseInt(m[2], 10)
+
+  try {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 8000)
+
+    // Try HTTP (not HTTPS — plain HTTP on XML port)
+    const url = `http://${host}:${port}/rk7api/v0/xmlinterface.xml`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/xml; charset=utf-8' },
+      body: xmlCommand,
+      signal: controller.signal,
+    })
+    clearTimeout(timer)
+
+    if (response.ok) {
+      const xml = await response.text()
+      return { success: true, xml }
+    }
+    return { success: false, error: `V3 HTTP ${response.status}` }
+  } catch {
+    return { success: false, error: 'V3 HTTP failed' }
+  }
 }
 
 // ============================================================
